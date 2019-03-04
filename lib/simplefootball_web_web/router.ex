@@ -10,5 +10,6 @@ defmodule SimplefootballWebWeb.Router do
     pipe_through :api
 
     resources "/competitions", CompetitionController, only: [:index]
+    get("/competitions/:id/currentMatchday", CompetitionController, :current_matchday)
   end
 end

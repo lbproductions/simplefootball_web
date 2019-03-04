@@ -4,7 +4,7 @@ defmodule SimplefootballWebWeb.CompetitionViewTest do
   alias SimplefootballWeb.Competition
   alias SimplefootballWebWeb.CompetitionView
 
-  test "render a competition" do
+  test "render a competition without a season" do
     competition = %Competition{
       name: "1. Bundesliga",
       icon_url: "URL",
@@ -18,6 +18,40 @@ defmodule SimplefootballWebWeb.CompetitionViewTest do
              name: "1. Bundesliga",
              iconUrl: "URL",
              competitionType: "bundesliga"
+           }
+  end
+
+  test "render a competition with seasons" do
+    competition = %Competition{
+      name: "1. Bundesliga",
+      icon_url: "URL",
+      id: 1,
+      competition_type: "bundesliga",
+      seasons: [
+        %{
+          year: 2017
+        },
+        %{
+          year: 2018
+        }
+      ]
+    }
+
+    result = CompetitionView.renderCompetition(competition)
+
+    assert result == %{
+             name: "1. Bundesliga",
+             iconUrl: "URL",
+             id: 1,
+             competitionType: "bundesliga",
+             seasons: [
+               %{
+                 year: 2017
+               },
+               %{
+                 year: 2018
+               }
+             ]
            }
   end
 
