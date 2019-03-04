@@ -4,14 +4,16 @@ defmodule SimplefootballWeb.Repo.Migrations.CreatePeople do
   import EctoEnum
     
     defenum CompetitionType, :competitionType, [:bundesliga, :bundesliga2, :regionalligaWest, :dfbPokal, :championsLeague, :europaLeague, :premierLeague, :laLiga, :serieA, :ligue1]
-  
+    defenum MatchEventType, :matchEventType, [:goal, :substitution, :card]
+
     def change do
       CompetitionType.create_type
+      MatchEventType.create_type
 
       create table(:competitions) do
-        add :competitionType, CompetitionType.type()
+        add :competition_type, CompetitionType.type()
         add :name, :string
-        add :iconUrl, :string
+        add :icon_url, :string
       end
 
       create table(:seasons) do
@@ -28,16 +30,16 @@ defmodule SimplefootballWeb.Repo.Migrations.CreatePeople do
       create table(:teams) do
         add :name, :string
         add :abbreviation, :string
-        add :tmIdentifier, :string
-        add :alternativeNames, {:array, :string}
+        add :tm_identifier, :string
+        add :alternative_names, {:array, :string}
       end
 
       create table(:matches) do
         add :date, :date
         add :result, :string
-        add :afterPenalties, :boolean
+        add :after_penalties, :boolean
         add :extraTime, :boolean
-        add :tmIdentifier, :string
+        add :tm_identifier, :string
         add :home_team_id, references(:teams)
         add :away_team_id, references(:teams)
         add :matchday_id, references(:matchdays)
@@ -45,8 +47,8 @@ defmodule SimplefootballWeb.Repo.Migrations.CreatePeople do
 
       create table(:players) do
         add :name, :string
-        add :shirtNumber, :string
-        add :tmIdentifier, :string
+        add :shirt_number, :string
+        add :tm_identifier, :string
       end
 
       create table(:lineups) do

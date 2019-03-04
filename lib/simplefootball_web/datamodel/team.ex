@@ -5,7 +5,7 @@ defmodule SimplefootballWeb.Team do
     schema "teams" do
         field(:name, :string)
         field(:abbreviation, :string)
-        field(:alternativeNames, {:array, :string})
-        field(:tmIdentifier, :string)
+        field(:alternative_names, {:array, :string})
+        field(:tm_identifier, :string)
     end
 end

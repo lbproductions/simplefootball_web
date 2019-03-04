@@ -7,15 +7,15 @@ defmodule SimplefootballWeb.Match do
     schema "matches" do
         field(:date, :date)
         field(:result, :string)
-        field(:afterPenalties, :boolean, default: false)
-        field(:extraTime, :boolean, default: false)
-        field(:tmIdentifier, :string)
+        field(:after_penalties, :boolean, default: false)
+        field(:extra_time, :boolean, default: false)
+        field(:tm_identifier, :string)
 
-        has_many(:matchEvents, MatchEvent)
-        belongs_to(:homeTeam, Team)
-        belongs_to(:awayTeam, Team)
+        has_many(:match_events, MatchEvent)
+        belongs_to(:home_team, Team)
+        belongs_to(:away_team, Team)
         belongs_to(:matchday, Matchday)
-        has_one(:homeLineup, Lineup)
-        has_one(:awayLineup, Lineup)
+        has_one(:home_lineup, Lineup)
+        has_one(:away_lineup, Lineup)
     end
 end
