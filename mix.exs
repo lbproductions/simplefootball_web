@@ -55,7 +55,9 @@ defmodule SimplefootballWeb.MixProject do
       {:uuid, "~> 1.1"},
       {:distillery, "~> 2.0"},
       {:dialyxir, "~> 0.5.0", only: [:dev], runtime: false},
-      {:excoveralls, "~> 0.10", only: :test}
+      {:excoveralls, "~> 0.10", only: :test},
+      {:meeseeks, "~> 0.11.0"},
+      {:httpoison, "~> 1.4"}
     ]
   end
 
