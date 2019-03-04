@@ -1,5 +1,4 @@
-# Use postgres/example user/password credentials
-version: "3.1"
+version: "3.5"
 
 services:
   db:
@@ -8,3 +7,27 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_PASSWORD: postgres
+  backend:
+    build:
+      context: .
+      args:
+        APP_NAME: simplefootball_web
+        APP_VSN: 0.1.0
+    image: lbproductions/simplefootball
+    ports:
+      - "4000:4000"
+    environment:
+      HOSTNAME: localhost
+      SECRET_KEY_BASE: "u1QXlca4XEZKb1o3HL/aUlznI1qstCNAQ6yme/lFbFIs0Iqiq/annZ+Ty8JyUCDc"
+      DATABASE_HOST: "db"
+      DATABASE_USER: "postgres"
+      DATABASE_PASS: "postgres"
+      DATABASE_NAME: "simplefootball_web_prod"
+      PORT: "4000"
+      LANG: "en_US.UTF-8"
+      REPLACE_OS_VARS: "false"
+      ERLANG_COOKIE: "simplefootball"
+    links:
+      - db
+    depends_on:
+      - db
