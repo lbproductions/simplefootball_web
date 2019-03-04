@@ -1,7 +1,7 @@
 defmodule SimplefootballWebWeb.CompetitionControllerTest do
   use SimplefootballWebWeb.ConnCase, async: true
 
-  alias SimplefootballWeb.{Repo, Competition, Season, Matchday}
+  alias SimplefootballWeb.{Repo, Competition, Season, Matchday, Match, Team}
 
   test "lists all competitions - no competitions", %{conn: conn} do
     conn = get(conn, Routes.competition_path(conn, :index))
@@ -63,10 +63,91 @@ defmodule SimplefootballWebWeb.CompetitionControllerTest do
         is_current_matchday: false
       })
 
-    conn = get(conn, Routes.competition_path(conn, :current_matchday, bundesliga.id))
+    conn =
+      get(conn, Routes.competition_path(conn, :current_matchday, bundesliga.competition_type))
 
     assert response(conn, 422) == "No current matchday"
 
+    Repo.delete_all(Matchday)
+    Repo.delete_all(Season)
+    Repo.delete_all(Competition)
+  end
+
+  test "get current matchday with existing one", %{conn: conn} do
+    date = DateTime.truncate(DateTime.utc_now(), :second)
+
+    {:ok, bundesliga} =
+      createCompetition(%Competition{
+        name: "1. Bundesliga",
+        competition_type: "bundesliga",
+        icon_url:
+          "https://upload.wikimedia.org/wikipedia/en/thumb/d/df/Bundesliga_logo_%282017%29.svg/290px-Bundesliga_logo_%282017%29.svg.png"
+      })
+
+    {:ok, bundesliga2018} =
+      Repo.insert(%Season{
+        year: 2018,
+        competition_id: bundesliga.id
+      })
+
+    {:ok, bundesliga2018matchday24} =
+      Repo.insert(%Matchday{
+        number: 24,
+        description: "24. Spieltag",
+        season_id: bundesliga2018.id,
+        is_current_matchday: true
+      })
+
+    {:ok, bundesliga2018matchday24match1homeTeam} =
+      Repo.insert(%Team{
+        name: "Borussia Dortmund",
+        abbreviation: "BVB"
+      })
+
+    {:ok, bundesliga2018matchday24match1awayTeam} =
+      Repo.insert(%Team{
+        name: "Bayer Leverkusen",
+        abbreviation: "B04"
+      })
+
+    {:ok, _} =
+      Repo.insert(%Match{
+        date: date,
+        result: "2:1",
+        matchday_id: bundesliga2018matchday24.id,
+        after_penalties: false,
+        extra_time: false,
+        home_team_id: bundesliga2018matchday24match1homeTeam.id,
+        away_team_id: bundesliga2018matchday24match1awayTeam.id
+      })
+
+    conn =
+      get(conn, Routes.competition_path(conn, :current_matchday, bundesliga.competition_type))
+
+    assert json_response(conn, 200) == %{
+             "number" => 24,
+             "description" => "24. Spieltag",
+             "isCurrentMatchday" => true,
+             "matches" => [
+               %{
+                 "afterPenalties" => false,
+                 "extraTime" => false,
+                 "result" => "2:1",
+                 "date" => DateTime.to_string(date),
+                 "homeTeam" => %{
+                   "name" => "Borussia Dortmund",
+                   "abbreviation" => "BVB"
+                 },
+                 "awayTeam" => %{
+                   "name" => "Bayer Leverkusen",
+                   "abbreviation" => "B04"
+                 }
+               }
+             ]
+           }
+
+    Repo.delete_all(Match)
+    Repo.delete_all(Team)
     Repo.delete_all(Matchday)
     Repo.delete_all(Season)
     Repo.delete_all(Competition)

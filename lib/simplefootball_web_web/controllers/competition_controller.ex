@@ -12,7 +12,7 @@ defmodule SimplefootballWebWeb.CompetitionController do
   end
 
   def current_matchday(conn, assigns) do
-    competition = competitionById(assigns["id"])
+    competition = competitionByType(assigns["competitionType"])
     season = Enum.max_by(competition.seasons, fn season -> season.year end)
 
     Logger.debug(fn ->
@@ -40,9 +40,9 @@ defmodule SimplefootballWebWeb.CompetitionController do
     |> Repo.all()
   end
 
-  def competitionById(id) do
+  def competitionByType(competition_type) do
     Competition
-    |> Repo.get!(id)
+    |> Repo.get_by!(competition_type: competition_type)
     |> Repo.preload(seasons: [:matchdays])
   end
 end

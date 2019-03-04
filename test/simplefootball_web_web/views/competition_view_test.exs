@@ -42,7 +42,6 @@ defmodule SimplefootballWebWeb.CompetitionViewTest do
     assert result == %{
              name: "1. Bundesliga",
              iconUrl: "URL",
-             id: 1,
              competitionType: "bundesliga",
              seasons: [
                %{
