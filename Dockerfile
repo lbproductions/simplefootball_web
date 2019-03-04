@@ -78,4 +78,4 @@ WORKDIR /opt/app
 
 COPY --from=builder /opt/built .
 
-CMD env; trap 'exit' INT; /opt/app/bin/${APP_NAME} foreground
+CMD trap 'exit' INT; /opt/app/bin/${APP_NAME} foreground
