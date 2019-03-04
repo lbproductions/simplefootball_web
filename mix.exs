@@ -44,7 +44,8 @@ defmodule SimplefootballWeb.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:ecto_enum, "~> 1.2"},
-      {:uuid, "~> 1.1"}
+      {:uuid, "~> 1.1"},
+      {:distillery, "~> 2.0"}
     ]
   end
 
