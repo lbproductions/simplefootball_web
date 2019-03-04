@@ -6,9 +6,9 @@ FROM elixir:1.8-alpine AS builder
 
 # The following are build arguments used to change variable parts of the image.
 # The name of your application/release (required)
-ARG APP_NAME
+ARG APP_NAME=simplefootball_web
 # The version of the application we are building (required)
-ARG APP_VSN
+ARG APP_VSN=0.1.0
 # The environment to build with
 ARG MIX_ENV=prod
 # Set this to true if this release is not a Phoenix app
@@ -65,7 +65,7 @@ RUN \
 FROM alpine:${ALPINE_VERSION}
 
 # The name of your application/release (required)
-ARG APP_NAME
+ARG APP_NAME=simplefootball_web
 
 RUN apk update && \
     apk add --no-cache \
