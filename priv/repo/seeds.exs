@@ -14,7 +14,7 @@ alias SimplefootballWeb.{Repo, Competition}
 
 defmodule DataCreation do
   def createCompetition(competition) do
-    Repo.insert(competition)
+    Repo.insert!(competition)
   end
 end
 

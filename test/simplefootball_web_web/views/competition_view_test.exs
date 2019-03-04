@@ -17,7 +17,6 @@ defmodule SimplefootballWebWeb.CompetitionViewTest do
     assert result == %{
              name: "1. Bundesliga",
              iconUrl: "URL",
-             id: 1,
              competitionType: "bundesliga"
            }
   end
@@ -43,13 +42,11 @@ defmodule SimplefootballWebWeb.CompetitionViewTest do
              %{
                name: "1. Bundesliga",
                iconUrl: "URL",
-               id: 1,
                competitionType: "bundesliga"
              },
              %{
                name: "2. Bundesliga",
                iconUrl: "URL2",
-               id: 2,
                competitionType: "bundesliga2"
              }
            ]

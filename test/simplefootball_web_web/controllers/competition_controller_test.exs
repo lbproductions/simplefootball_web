@@ -30,14 +30,12 @@ defmodule SimplefootballWebWeb.CompetitionControllerTest do
              %{
                "name" => "1. Bundesliga",
                "iconUrl" => "URL1",
-               "competitionType" => "bundesliga",
-               "id" => 1
+               "competitionType" => "bundesliga"
              },
              %{
                "name" => "2. Bundesliga",
                "iconUrl" => "URL2",
-               "competitionType" => "bundesliga2",
-               "id" => 2
+               "competitionType" => "bundesliga2"
              }
            ]
   end

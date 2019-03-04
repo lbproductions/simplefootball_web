@@ -9,7 +9,6 @@ defmodule SimplefootballWebWeb.CompetitionView do
     %{
       name: competition.name,
       iconUrl: competition.icon_url,
-      id: competition.id,
       competitionType: competition.competition_type
     }
   end
