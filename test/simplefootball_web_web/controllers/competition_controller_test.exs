@@ -10,8 +10,6 @@ defmodule SimplefootballWebWeb.CompetitionControllerTest do
   end
 
   test "lists all competitions - existing competitions", %{conn: conn} do
-    Repo.query("ALTER SEQUENCE competitions_id_seq RESTART")
-
     createCompetition(%Competition{
       name: "1. Bundesliga",
       competition_type: "bundesliga",
