@@ -4,6 +4,7 @@ defmodule SimplefootballWebWeb.ScraperTest do
   import HTTPoison
   import Meeseeks.XPath
   require Logger
+  use Timex
 
   test "scrape" do
     {:ok, result} =
@@ -20,8 +21,10 @@ defmodule SimplefootballWebWeb.ScraperTest do
   end
 
   def match(table) do
+    elements = Meeseeks.all(table, xpath(".//a[@class='vereinprofil_tooltip']"))
+
     names =
-      Meeseeks.all(table, xpath(".//a[@class='vereinprofil_tooltip']"))
+      elements
       |> Enum.map(fn name -> Meeseeks.text(name) end)
       |> Enum.filter(fn name -> name != "" end)
       |> split()
@@ -29,10 +32,104 @@ defmodule SimplefootballWebWeb.ScraperTest do
     Logger.debug(fn ->
       "names: #{inspect(names)}"
     end)
+
+    teamIdentifiers =
+      elements
+      |> Enum.map(fn element -> Meeseeks.attr(element, "id") end)
+      |> Enum.filter(fn element -> element != "" end)
+      |> uniq()
+
+    resultElement =
+      Meeseeks.one(table, xpath(".//a[@title='Vorbericht']")) ||
+        Meeseeks.one(table, xpath(".//a[@class='ergebnis-link live-ergebnis']")) ||
+        Meeseeks.one(table, xpath(".//a[@class='ergebnis-link']"))
+
+    result = Meeseeks.text(resultElement)
+
+    identifier =
+      Meeseeks.attr(resultElement, "href")
+      |> String.split("/", trim: true)
+      |> List.last()
+
+    date = date(table, 2) || date(table, 3)
+
+    Logger.debug(fn ->
+      "teamIdentifiers: #{inspect(teamIdentifiers)}"
+    end)
+
+    Logger.debug(fn ->
+      "result: #{inspect(result)}, identifier: #{identifier}, date: #{date}"
+    end)
   end
+
+  # Scraper Helpers
+
+  def date(element, index) do
+    dateString =
+      Meeseeks.one(element, xpath(".//tr[#{index}]/td/a"))
+      |> Meeseeks.text()
+      |> nilIfEmpty()
+
+    timeString = time(element, index)
+
+    Logger.debug(fn ->
+      "dateString: #{inspect(dateString)}, timeString: #{inspect(timeString)}"
+    end)
+
+    if timeString == nil || dateString == nil do
+      nil
+    else
+      {:ok, date} = Timex.parse(dateString, "%d.%m.%Y", :strftime)
+
+      {:ok, time} = Timex.parse(timeString, "%H:%M", :strftime)
+
+      # TODO: Timezone
+      Timex.shift(date, hours: time.hour, minutes: time.minute)
+      |> Timex.to_datetime("Europe/Berlin")
+      |> Timezone.convert(Timezone.get("UTC", date))
+    end
+  end
+
+  def time(element, index) do
+    Meeseeks.one(element, xpath(".//tr[#{index}]/td"))
+    |> Meeseeks.text()
+    |> String.trim()
+    |> String.replace(" Uhr", "")
+    |> String.split(" ", trim: true)
+    |> List.last()
+    |> nilIfEmpty()
+  end
+
+  # String Helpers
+
+  def nilIfEmpty(string) do
+    if string == "" do
+      nil
+    else
+      string
+    end
+  end
+
+  # Array Helpers
 
   def split(list) do
     len = round(length(list) / 2)
     Enum.split(list, len)
+  end
+
+  def uniq(list) do
+    uniq(list, HashSet.new())
+  end
+
+  defp uniq([x | rest], found) do
+    if HashSet.member?(found, x) do
+      uniq(rest, found)
+    else
+      [x | uniq(rest, HashSet.put(found, x))]
+    end
+  end
+
+  defp uniq([], _) do
+    []
   end
 end
