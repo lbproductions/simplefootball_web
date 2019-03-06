@@ -3,21 +3,21 @@ defmodule SimplefootballWebWeb.SeasonView do
 
   alias SimplefootballWebWeb.MatchdayView
 
-  def renderList(seasons) do
-    Enum.map(seasons, fn season -> renderSeason(season) end)
+  def render_list(seasons) do
+    Enum.map(seasons, fn season -> render_season(season) end)
   end
 
-  def renderSeason(season) do
+  def render_season(season) do
     %{
       year: season.year,
-      matchdays: includeMatchdays(season)
+      matchdays: include_matchdays(season)
     }
     |> Helpers.drop_nil()
   end
 
-  def includeMatchdays(season) do
+  def include_matchdays(season) do
     if Map.has_key?(season, :matchdays) && Ecto.assoc_loaded?(season.matchdays) do
-      MatchdayView.renderList(season.matchdays)
+      MatchdayView.render_list(season.matchdays)
     else
       nil
     end

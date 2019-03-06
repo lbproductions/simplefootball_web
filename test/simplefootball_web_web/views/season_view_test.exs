@@ -9,7 +9,7 @@ defmodule SimplefootballWebWeb.SeasonViewTest do
       year: 2018
     }
 
-    result = SeasonView.renderSeason(season)
+    result = SeasonView.render_season(season)
 
     assert result == %{
              year: 2018
@@ -33,7 +33,7 @@ defmodule SimplefootballWebWeb.SeasonViewTest do
       ]
     }
 
-    result = SeasonView.renderSeason(season)
+    result = SeasonView.render_season(season)
 
     assert result == %{
              year: 2018,
@@ -61,7 +61,7 @@ defmodule SimplefootballWebWeb.SeasonViewTest do
       year: 2018
     }
 
-    result = SeasonView.renderList([season1, season2])
+    result = SeasonView.render_list([season1, season2])
 
     assert result == [
              %{

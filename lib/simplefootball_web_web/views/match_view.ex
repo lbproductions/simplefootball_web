@@ -3,25 +3,25 @@ defmodule SimplefootballWebWeb.MatchView do
 
   alias SimplefootballWebWeb.TeamView
 
-  def renderList(matches) do
-    Enum.map(matches, fn match -> renderMatch(match) end)
+  def render_list(matches) do
+    Enum.map(matches, fn match -> render_match(match) end)
   end
 
-  def renderMatch(match) do
+  def render_match(match) do
     %{
       date: DateTime.to_string(match.date),
       result: match.result,
       afterPenalties: match.after_penalties,
       extraTime: match.extra_time,
-      homeTeam: includeTeam(match.home_team),
-      awayTeam: includeTeam(match.away_team)
+      homeTeam: include_team(match.home_team),
+      awayTeam: include_team(match.away_team)
     }
     |> Helpers.drop_nil()
   end
 
-  def includeTeam(team) do
+  def include_team(team) do
     if team != nil && Ecto.assoc_loaded?(team) do
-      TeamView.renderTeam(team)
+      TeamView.render_team(team)
     else
       nil
     end

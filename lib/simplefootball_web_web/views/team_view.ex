@@ -3,11 +3,11 @@ defmodule SimplefootballWebWeb.TeamView do
 
   # alias SimplefootballWebWeb.MatchView
 
-  def renderList(teams) do
-    Enum.map(teams, fn team -> renderTeam(team) end)
+  def render_list(teams) do
+    Enum.map(teams, fn team -> render_team(team) end)
   end
 
-  def renderTeam(team) do
+  def render_team(team) do
     %{
       name: team.name,
       abbreviation: team.abbreviation

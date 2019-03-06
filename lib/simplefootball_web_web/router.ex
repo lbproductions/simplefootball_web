@@ -12,7 +12,7 @@ defmodule SimplefootballWebWeb.Router do
     resources "/competitions", CompetitionController, only: [:index]
 
     get(
-      "/competitions/:competitionType/currentMatchday",
+      "/competitions/:competitionType/current-matchday",
       CompetitionController,
       :current_matchday
     )

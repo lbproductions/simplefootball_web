@@ -11,7 +11,7 @@ defmodule SimplefootballWebWeb.MatchdayViewTest do
       is_current_matchday: true
     }
 
-    result = MatchdayView.renderMatchday(matchday)
+    result = MatchdayView.render_matchday(matchday)
 
     assert result == %{
              description: "1. Spieltag",
@@ -43,7 +43,7 @@ defmodule SimplefootballWebWeb.MatchdayViewTest do
       ]
     }
 
-    result = MatchdayView.renderMatchday(matchday)
+    result = MatchdayView.render_matchday(matchday)
 
     assert result == %{
              description: "1. Spieltag",
@@ -79,7 +79,7 @@ defmodule SimplefootballWebWeb.MatchdayViewTest do
       is_current_matchday: false
     }
 
-    result = MatchdayView.renderList([matchday1, matchday2])
+    result = MatchdayView.render_list([matchday1, matchday2])
 
     assert result == [
              %{

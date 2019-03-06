@@ -14,7 +14,7 @@ defmodule SimplefootballWebWeb.MatchViewTest do
       extra_time: false
     }
 
-    result = MatchView.renderMatch(match)
+    result = MatchView.render_match(match)
 
     assert result == %{
              date: DateTime.to_string(date),
@@ -42,7 +42,7 @@ defmodule SimplefootballWebWeb.MatchViewTest do
       }
     }
 
-    result = MatchView.renderMatch(match)
+    result = MatchView.render_match(match)
 
     assert result == %{
              date: DateTime.to_string(date),
@@ -77,7 +77,7 @@ defmodule SimplefootballWebWeb.MatchViewTest do
       extra_time: true
     }
 
-    result = MatchView.renderList([match1, match2])
+    result = MatchView.render_list([match1, match2])
 
     assert result == [
              %{

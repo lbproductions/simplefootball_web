@@ -10,7 +10,7 @@ defmodule SimplefootballWebWeb.TeamViewTest do
       abbreviation: "BVB"
     }
 
-    result = TeamView.renderTeam(team)
+    result = TeamView.render_team(team)
 
     assert result == %{
              name: "Borussia Dortmund",
@@ -29,7 +29,7 @@ defmodule SimplefootballWebWeb.TeamViewTest do
       abbreviation: "B04"
     }
 
-    result = TeamView.renderList([team1, team2])
+    result = TeamView.render_list([team1, team2])
 
     assert result == [
              %{

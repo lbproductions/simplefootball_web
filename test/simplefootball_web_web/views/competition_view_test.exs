@@ -12,7 +12,7 @@ defmodule SimplefootballWebWeb.CompetitionViewTest do
       competition_type: "bundesliga"
     }
 
-    result = CompetitionView.renderCompetition(competition)
+    result = CompetitionView.render_competition(competition)
 
     assert result == %{
              name: "1. Bundesliga",
@@ -37,7 +37,7 @@ defmodule SimplefootballWebWeb.CompetitionViewTest do
       ]
     }
 
-    result = CompetitionView.renderCompetition(competition)
+    result = CompetitionView.render_competition(competition)
 
     assert result == %{
              name: "1. Bundesliga",
@@ -69,7 +69,7 @@ defmodule SimplefootballWebWeb.CompetitionViewTest do
       competition_type: "bundesliga2"
     }
 
-    result = CompetitionView.renderList([competition1, competition2])
+    result = CompetitionView.render_list([competition1, competition2])
 
     assert result == [
              %{
