@@ -6,6 +6,8 @@ defmodule SimplefootballWebWeb.ScraperTest do
   require Logger
   use Timex
 
+  alias SimplefootballWeb.{Match, Team}
+
   test "scrape" do
     {:ok, result} =
       File.read("./test/simplefootball_web_web/resources/tm/bundesliga_2018_18.html")
@@ -60,6 +62,16 @@ defmodule SimplefootballWebWeb.ScraperTest do
     Logger.debug(fn ->
       "result: #{inspect(result)}, identifier: #{identifier}, date: #{date}"
     end)
+
+    # find or create team and match by tm identifier
+
+    %Match{
+      date: date,
+      result: result,
+      tm_identifier: identifier,
+      home_team_id: bundesliga2018matchday24match1homeTeam.id,
+      away_team_id: bundesliga2018matchday24match1awayTeam.id
+    }
   end
 
   # Scraper Helpers
@@ -83,7 +95,6 @@ defmodule SimplefootballWebWeb.ScraperTest do
 
       {:ok, time} = Timex.parse(timeString, "%H:%M", :strftime)
 
-      # TODO: Timezone
       Timex.shift(date, hours: time.hour, minutes: time.minute)
       |> Timex.to_datetime("Europe/Berlin")
       |> Timezone.convert(Timezone.get("UTC", date))
