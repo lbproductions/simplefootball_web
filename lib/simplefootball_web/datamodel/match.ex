@@ -1,5 +1,6 @@
 defmodule SimplefootballWeb.Match do
   use Ecto.Schema
+  import Ecto.Changeset
 
   alias SimplefootballWeb.{MatchEvent, Team, Lineup, Matchday}
 
@@ -16,5 +17,19 @@ defmodule SimplefootballWeb.Match do
     belongs_to(:matchday, Matchday)
     has_one(:home_lineup, Lineup)
     has_one(:away_lineup, Lineup)
+  end
+
+  def changeset(match, attrs) do
+    match
+    |> cast(attrs, [
+      :date,
+      :result,
+      :after_penalties,
+      :extra_time,
+      :tm_identifier,
+      :home_team_id,
+      :away_team_id,
+      :matchday_id
+    ])
   end
 end

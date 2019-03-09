@@ -1,5 +1,6 @@
 defmodule SimplefootballWeb.Matchday do
   use Ecto.Schema
+  import Ecto.Changeset
 
   alias SimplefootballWeb.{Match, Season}
 
@@ -10,5 +11,15 @@ defmodule SimplefootballWeb.Matchday do
 
     has_many(:matches, Match)
     belongs_to(:season, Season)
+  end
+
+  def changeset(matchday, attrs) do
+    matchday
+    |> cast(attrs, [
+      :number,
+      :description,
+      :is_current_matchday,
+      :season_id
+    ])
   end
 end
