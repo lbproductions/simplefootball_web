@@ -1,42 +1,55 @@
 defmodule SimplefootballWeb.TMMatchdayScraper do
+  alias SimplefootballWeb.{TMHttpService, TMParser, MatchdayScraper}
+  @behaviour MatchdayScraper
+
+  @impl MatchdayScraper
+  def matchday(competition, season, number) do
+    competition_identifier = TMHttpService.tm_competition_identifier(competition)
+    data = TMHttpService.matchday(competition_identifier, season.year, number)
+    TMParser.scrape_matchday(data)
+  end
+end
+
+defmodule SimplefootballWeb.TMHttpService do
   import HTTPoison
+
+  @base_url "www.transfermarkt.de"
+
+  def matchday(competition_identifier, season_year, number) do
+
+    HTTPoison.get!(
+          "https://#{@base_url}/#{competition_identifier}?saison_id=#{season_year}&spieltag=#{number}"
+        ).body
+  end
+
+  def tm_competition_identifier(competition) do
+    case competition.competitionType do
+      :bundesliga -> "1-bundesliga/spieltag/wettbewerb/L1/plus/0"
+    end
+  end
+end
+
+defmodule SimplefootballWeb.TMParser do
   import Meeseeks.XPath
   require Logger
   use Timex
 
-  alias SimplefootballWeb.{
-    Match,
-    Team,
-    MatchRepo,
-    TeamRepo,
-    StringHelpers,
-    ArrayHelpers,
-    MatchdayRepo
-  }
+  alias SimplefootballWeb.{StringHelpers, ArrayHelpers}
 
-  def scrape_matchday(data, season_id, number) do
+  def scrape_matchday(data) do
     document = Meeseeks.parse(data)
 
-    {:ok, matchday} =
-      MatchdayRepo.update_or_create_matchday_by(
-        season_id: season_id,
-        number: number,
-        changeset: %{
-          season_id: season_id,
-          number: number
-        }
-      )
-
-    scrape_matches(document, matchday.id)
-    matchday
+    %{
+      matches: scrape_matches(document)
+    }
   end
 
-  def scrape_matches(document, matchday_id) do
+  def scrape_matches(document) do
     gameTables = Meeseeks.all(document, xpath("//table[@style='border-top: 0 !important;']"))
-    Enum.map(gameTables, fn table -> match(table, matchday_id) end)
+    Enum.map(gameTables, fn table -> match(table) end)
   end
 
-  def match(table, matchday_id) do
+  def teams(table) do
     elements = Meeseeks.all(table, xpath(".//a[@class='vereinprofil_tooltip']"))
 
     {home_names, away_names} =
@@ -59,28 +72,21 @@ defmodule SimplefootballWeb.TMMatchdayScraper do
     home_tm_identifier = List.first(teamIdentifiers)
     away_tm_identifier = List.last(teamIdentifiers)
 
-    {:ok, home_team} =
-      TeamRepo.update_or_create_team_by_tm_identifier(home_tm_identifier, %{
+    %{
+      home_team: %{
         name: home_name,
         abbreviation: home_abbrevation,
         tm_identifier: home_tm_identifier
-      })
-
-    Logger.debug(fn ->
-      "home_team: #{inspect(home_team)}"
-    end)
-
-    {:ok, away_team} =
-      TeamRepo.update_or_create_team_by_tm_identifier(away_tm_identifier, %{
+      },
+      away_team: %{
         name: away_name,
         abbreviation: away_abbrevation,
         tm_identifier: away_tm_identifier
-      })
+      }
+    }
+  end
 
-    Logger.debug(fn ->
-      "away_team: #{inspect(away_team)}"
-    end)
-
+  def match(table) do
     resultElement =
       Meeseeks.one(table, xpath(".//a[@title='Vorbericht']")) ||
         Meeseeks.one(table, xpath(".//a[@class='ergebnis-link live-ergebnis']")) ||
@@ -95,23 +101,16 @@ defmodule SimplefootballWeb.TMMatchdayScraper do
 
     date = date(table, 2) || date(table, 3)
 
-    # find or create team and match by tm identifier
-
-    {:ok, match} =
-      MatchRepo.update_or_create_match_by_tm_identifier(match_tm_identifier, %{
+    teams = teams(table)
+    %{
+      home_team: teams.home_team,
+      away_team: teams.away_team,
+      match: %{
         date: date,
         result: result,
-        tm_identifier: match_tm_identifier,
-        home_team_id: home_team.id,
-        away_team_id: away_team.id,
-        matchday_id: matchday_id
-      })
-
-    Logger.debug(fn ->
-      "match: #{inspect(match)}"
-    end)
-
-    match
+        tm_identifier: match_tm_identifier
+      }
+    }
   end
 
   # Scraper Helpers
