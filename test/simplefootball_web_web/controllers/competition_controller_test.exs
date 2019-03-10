@@ -66,7 +66,7 @@ defmodule SimplefootballWebWeb.CompetitionControllerTest do
     conn =
       get(conn, Routes.competition_path(conn, :current_matchday, bundesliga.competition_type))
 
-    assert response(conn, 422) == "No current matchday"
+    assert response(conn, 404) == "No current matchday"
 
     Repo.delete_all(Matchday)
     Repo.delete_all(Season)

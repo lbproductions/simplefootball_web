@@ -14,7 +14,7 @@ defmodule SimplefootballWebWeb.CompetitionController do
     current_matchday = CompetitionRepo.current_matchday_by_type(competition_type)
 
     if current_matchday == nil do
-      send_resp(conn, 422, "No current matchday")
+      send_resp(conn, 404, "No current matchday")
     else
       Logger.debug(fn ->
         "current_matchday: #{inspect(current_matchday)}"
