@@ -74,7 +74,8 @@ defmodule SimplefootballWebWeb.CompetitionControllerTest do
   end
 
   test "get current matchday with existing one", %{conn: conn} do
-    date = DateTime.truncate(DateTime.utc_now(), :second)
+    {:ok, date, utc_offset} = DateTime.from_iso8601("2018-12-30T16:00:00.000Z")
+    date = DateTime.truncate(date, :second)
 
     {:ok, bundesliga} =
       createCompetition(%Competition{
