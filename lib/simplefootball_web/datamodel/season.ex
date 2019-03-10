@@ -5,6 +5,7 @@ defmodule SimplefootballWeb.Season do
 
   schema "seasons" do
     field(:year, :integer)
+    field(:title, :string)
 
     belongs_to(:competition, Competition)
     has_many(:matchdays, Matchday)

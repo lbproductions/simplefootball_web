@@ -30,6 +30,7 @@ defmodule SimplefootballWeb.Repo.Migrations.CreatePeople do
 
     create table(:seasons) do
       add :year, :integer
+      add :title, :string
       add :competition_id, references(:competitions)
     end
 

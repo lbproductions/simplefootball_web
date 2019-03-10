@@ -29,10 +29,12 @@ defmodule SimplefootballWebWeb.CompetitionViewTest do
       competition_type: "bundesliga",
       seasons: [
         %{
-          year: 2017
+          year: 2017,
+          title: "2017 / 2018",
         },
         %{
-          year: 2018
+          year: 2018,
+          title: "2018 / 2019"
         }
       ]
     }
@@ -44,12 +46,14 @@ defmodule SimplefootballWebWeb.CompetitionViewTest do
              iconUrl: "URL",
              competitionType: "bundesliga",
              seasons: [
-               %{
-                 year: 2017
-               },
-               %{
-                 year: 2018
-               }
+              %{
+                year: 2017,
+                title: "2017 / 2018",
+              },
+              %{
+                year: 2018,
+                title: "2018 / 2019"
+              }
              ]
            }
   end

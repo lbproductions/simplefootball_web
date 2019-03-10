@@ -19,6 +19,7 @@ defmodule SimplefootballWebWeb.SeasonViewTest do
   test "render a season with matchdays" do
     season = %Season{
       year: 2018,
+      title: "2018 / 2019",
       matchdays: [
         %{
           description: "1. Spieltag",
@@ -37,6 +38,7 @@ defmodule SimplefootballWebWeb.SeasonViewTest do
 
     assert result == %{
              year: 2018,
+             title: "2018 / 2019",
              matchdays: [
                %{
                  description: "1. Spieltag",
@@ -54,21 +56,25 @@ defmodule SimplefootballWebWeb.SeasonViewTest do
 
   test "render a list of seasons" do
     season1 = %Season{
-      year: 2017
+      year: 2017,
+      title: "2017 / 2018",
     }
 
     season2 = %Season{
-      year: 2018
+      year: 2018,
+      title: "2018 / 2019"
     }
 
     result = SeasonView.render_list([season1, season2])
 
     assert result == [
              %{
-               year: 2017
+               year: 2017,
+               title: "2017 / 2018",
              },
              %{
-               year: 2018
+               year: 2018,
+               title: "2018 / 2019"
              }
            ]
   end

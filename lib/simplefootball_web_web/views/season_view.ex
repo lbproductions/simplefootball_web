@@ -10,6 +10,7 @@ defmodule SimplefootballWebWeb.SeasonView do
   def render_season(season) do
     %{
       year: season.year,
+      title: season.title,
       matchdays: include_matchdays(season)
     }
     |> Helpers.drop_nil()
