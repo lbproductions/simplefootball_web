@@ -10,7 +10,8 @@ defmodule SimplefootballWeb.MixProject do
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      dialyzer: [plt_add_deps: :transitive, plt_file: {:no_warn, "priv/plts/dialyzer.plt"}]
     ]
   end
 
@@ -45,7 +46,8 @@ defmodule SimplefootballWeb.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:ecto_enum, "~> 1.2"},
       {:uuid, "~> 1.1"},
-      {:distillery, "~> 2.0"}
+      {:distillery, "~> 2.0"},
+      {:dialyxir, "~> 0.5.0", only: [:dev], runtime: false}
     ]
   end
 
