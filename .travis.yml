@@ -1,11 +1,12 @@
+language: elixir
+elixir:
+  - "1.8"
+otp_release:
+  - "21.2"
+
 jobs:
   include:
     - stage: mix test
-      language: elixir
-      elixir:
-        - "1.8"
-      otp_release:
-        - "21.2"
       services:
         - postgresql
       before_script:
