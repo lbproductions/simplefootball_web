@@ -15,6 +15,13 @@ jobs:
       script:
         - mix test
 
+    - stage: mix dialyzer
+      script:
+        - mix dialyzer --halt-exit-status
+      cache:
+        directories:
+          - priv/plts
+
     - stage: docker build
       script:
         - docker build -t lbproductions/simplefootball_web .
