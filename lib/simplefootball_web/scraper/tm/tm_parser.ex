@@ -15,7 +15,14 @@ defmodule SimplefootballWeb.TMParser do
 
   def scrape_matches(document) do
     gameTables = Meeseeks.all(document, xpath("//table[@style='border-top: 0 !important;']"))
+
     Enum.map(gameTables, fn table -> match(table) end)
+    |> Enum.sort(fn x, y ->
+      case DateTime.compare(x.match.date, y.match.date) do
+        :lt -> true
+        _ -> false
+      end
+    end)
   end
 
   def teams(table) do
@@ -71,6 +78,7 @@ defmodule SimplefootballWeb.TMParser do
     date = date(table, 2) || date(table, 3)
 
     teams = teams(table)
+
     %{
       home_team: teams.home_team,
       away_team: teams.away_team,
