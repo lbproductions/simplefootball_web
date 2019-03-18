@@ -29,7 +29,7 @@ defmodule SimplefootballWeb.MixProject do
     [
       mod: {SimplefootballWeb.Application, []},
       extra_applications: [:logger, :runtime_tools],
-      applications: [:timex]
+      applications: [:timex, :httpoison]
     ]
   end
 
@@ -55,11 +55,12 @@ defmodule SimplefootballWeb.MixProject do
       {:ecto_enum, "~> 1.2"},
       {:uuid, "~> 1.1"},
       {:distillery, "~> 2.0"},
-      {:dialyxir, "~> 0.5.0", only: [:dev], runtime: false},
+      {:dialyxir, "~> 0.5.0", only: [:dev]},
       {:excoveralls, "~> 0.10", only: :test},
       {:meeseeks, "~> 0.11.0"},
       {:httpoison, "~> 1.4"},
-      {:timex, "~> 3.1"}
+      {:timex, "~> 3.1"},
+      {:mock, "~> 0.3.0", only: :test}
     ]
   end
 

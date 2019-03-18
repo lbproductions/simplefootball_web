@@ -1,10 +1,8 @@
 defmodule SimplefootballWeb.TMHttpService do
-  import HTTPoison
-
   @base_url "www.transfermarkt.de"
 
   def matchday(competition_identifier, season_year, number) do
-    HTTPoison.get!(
+    HTTPoison.get(
       "https://#{@base_url}/#{competition_identifier}?saison_id=#{season_year}&spieltag=#{number}"
     ).body
   end

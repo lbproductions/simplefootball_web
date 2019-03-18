@@ -2,8 +2,11 @@ defmodule SimplefootballWebWeb.TMHttpServiceTest do
   use SimplefootballWebWeb.ConnCase, async: true
 
   require Logger
-
+  import Mock
+  import HTTPoison
   alias SimplefootballWeb.{TMHttpService, Competition, CompetitionType}
+
+  @base_url "www.transfermarkt.de"
 
   test "get a competion identifier for a existing competition type" do
     competition = %Competition{
@@ -20,5 +23,28 @@ defmodule SimplefootballWebWeb.TMHttpServiceTest do
     }
 
     assert TMHttpService.tm_competition_identifier(competition) == nil
+  end
+
+  test "get the matchday data for a competition identifier, a year and a matchday number" do
+    result = %{
+      body: "<html></html>"
+    }
+
+    competition_identifier = "1-bundesliga/spieltag/wettbewerb/L1/plus/0"
+    season_year = 2018
+    number = 1
+
+    expected_url =
+      "https://#{@base_url}/#{competition_identifier}?saison_id=#{season_year}&spieltag=#{number}"
+
+    with_mock HTTPoison,
+      get: fn url ->
+        case url do
+          ^expected_url -> result
+          _ -> ""
+        end
+      end do
+      assert result.body == TMHttpService.matchday(competition_identifier, season_year, number)
+    end
   end
 end
