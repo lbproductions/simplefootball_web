@@ -1,5 +1,5 @@
 defmodule Helpers do
-  @spec drop_nil(struct) :: struct
+  @spec drop_nil(any) :: any
   def drop_nil(%_{} = struct) do
     struct
     |> Map.from_struct()
@@ -8,7 +8,6 @@ defmodule Helpers do
 
   def drop_nil(map = %{}) when map_size(map) == 0, do: nil
 
-  @spec drop_nil(map) :: map
   def drop_nil(map) when is_map(map) do
     map
     |> Enum.reduce(%{}, fn {k, v}, acc ->
@@ -24,7 +23,6 @@ defmodule Helpers do
 
   def drop_nil([]), do: nil
 
-  @spec drop_nil(list) :: list
   def drop_nil(list) when is_list(list) do
     list
     |> Enum.reduce([], fn v, acc ->

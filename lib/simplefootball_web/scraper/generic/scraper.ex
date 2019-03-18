@@ -1,29 +1,29 @@
 defmodule SimplefootballWeb.MatchdayScraper do
-    alias SimplefootballWeb.{Competition, Season}
-  @callback matchday(%Competition{}, %Season{}, :integer) :: %{}
+  alias SimplefootballWeb.{Competition, Season}
+  @callback matchday(%Competition{}, %Season{}, :integer) :: map
 end
 
 defmodule SimplefootballWeb.Scraper do
-    alias SimplefootballWeb.{MatchdayRepo, TeamRepo, MatchRepo}
+  alias SimplefootballWeb.{MatchdayRepo, TeamRepo, MatchRepo}
 
   def matchday(scraper, competition, season, number) do
     result = scraper.matchday(competition, season, number)
 
     {:ok, matchday} = update_matchday(result.matchday, season.id, number)
-    {:ok, matches} = update_matches(result.matches)
+    matches = update_matches(result.matches)
 
     %{
-        matchday: matchday,
-        matches: matches
+      matchday: matchday,
+      matches: matches
     }
   end
 
   def update_matchday(matchday, season_id, number) do
     MatchdayRepo.update_or_create_matchday_by(
-        season_id: season_id,
-        number: number,
-        changeset: matchday
-      )
+      season_id: season_id,
+      number: number,
+      changeset: matchday
+    )
   end
 
   def update_team(team) do
@@ -40,9 +40,9 @@ defmodule SimplefootballWeb.Scraper do
     {:ok, match} = MatchRepo.update_or_create_match_by_tm_identifier(match.tm_identifier, match)
 
     %{
-        home_team: home_team,
-        away_team: away_team,
-        match: match
+      home_team: home_team,
+      away_team: away_team,
+      match: match
     }
   end
 end
