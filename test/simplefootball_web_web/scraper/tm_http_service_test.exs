@@ -6,8 +6,6 @@ defmodule SimplefootballWebWeb.TMHttpServiceTest do
   import HTTPoison
   alias SimplefootballWeb.{TMHttpService, Competition, CompetitionType}
 
-  @base_url "www.transfermarkt.de"
-
   test "get a competion identifier for a existing competition type" do
     competition = %Competition{
       competition_type: :bundesliga
@@ -33,9 +31,10 @@ defmodule SimplefootballWebWeb.TMHttpServiceTest do
     competition_identifier = "1-bundesliga/spieltag/wettbewerb/L1/plus/0"
     season_year = 2018
     number = 1
+    base_url = TMHttpService.base_url()
 
     expected_url =
-      "https://#{@base_url}/#{competition_identifier}?saison_id=#{season_year}&spieltag=#{number}"
+      "https://#{base_url}/#{competition_identifier}?saison_id=#{season_year}&spieltag=#{number}"
 
     with_mock HTTPoison,
       get: fn url ->
