@@ -6,9 +6,17 @@ defmodule SimplefootballWeb.TMHttpService do
   end
 
   def matchday(competition_identifier, season_year, number) do
-    HTTPoison.get(
-      "https://#{@base_url}/#{competition_identifier}?saison_id=#{season_year}&spieltag=#{number}"
-    ).body
+    result =
+      HTTPoison.get(
+        "https://#{@base_url}/#{competition_identifier}?saison_id=#{season_year}&spieltag=#{
+          number
+        }"
+      )
+
+    case result do
+      {:ok, data} -> data.body
+      _ -> nil
+    end
   end
 
   def tm_competition_identifier(competition) do

@@ -24,9 +24,11 @@ defmodule SimplefootballWebWeb.TMHttpServiceTest do
   end
 
   test "get the matchday data for a competition identifier, a year and a matchday number" do
-    result = %{
+    result_data = %{
       body: "<html></html>"
     }
+
+    result = {:ok, result_data}
 
     competition_identifier = "1-bundesliga/spieltag/wettbewerb/L1/plus/0"
     season_year = 2018
@@ -43,7 +45,8 @@ defmodule SimplefootballWebWeb.TMHttpServiceTest do
           _ -> ""
         end
       end do
-      assert result.body == TMHttpService.matchday(competition_identifier, season_year, number)
+      assert result_data.body ==
+               TMHttpService.matchday(competition_identifier, season_year, number)
     end
   end
 end

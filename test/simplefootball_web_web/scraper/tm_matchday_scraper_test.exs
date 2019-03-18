@@ -31,7 +31,7 @@ defmodule SimplefootballWebWeb.TMMatchdayScraperTest do
           File.read("./test/simplefootball_web_web/resources/tm/bundesliga_2018_18.html")
 
         case url do
-          ^expected_url -> %{body: result}
+          ^expected_url -> {:ok, %{body: result}}
           _ -> ""
         end
       end do
