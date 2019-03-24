@@ -1,9 +1,8 @@
 defmodule SimplefootballWebWeb.TMMatchdayScraperTest do
-  use SimplefootballWebWeb.ConnCase, async: true
+  use SimplefootballWebWeb.ConnCase, async: false
 
   require Logger
   import Mock
-  import HTTPoison
   alias SimplefootballWeb.{TMMatchdayScraper, TMHttpService, Competition, Season}
 
   test "get a matchday successfully" do
@@ -14,8 +13,6 @@ defmodule SimplefootballWebWeb.TMMatchdayScraperTest do
     season = %Season{
       year: 2018
     }
-
-    number = 18
 
     competition_identifier = "1-bundesliga/spieltag/wettbewerb/L1/plus/0"
     season_year = 2018

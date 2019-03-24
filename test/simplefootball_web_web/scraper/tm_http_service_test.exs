@@ -1,10 +1,9 @@
 defmodule SimplefootballWebWeb.TMHttpServiceTest do
-  use SimplefootballWebWeb.ConnCase, async: true
+  use SimplefootballWebWeb.ConnCase, async: false
 
   require Logger
   import Mock
-  import HTTPoison
-  alias SimplefootballWeb.{TMHttpService, Competition, CompetitionType}
+  alias SimplefootballWeb.{TMHttpService, Competition}
 
   test "get a competion identifier for a existing competition type" do
     competition = %Competition{
