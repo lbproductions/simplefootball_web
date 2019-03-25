@@ -33,6 +33,7 @@ RUN apk update && \
     nodejs \
     yarn \
     git \
+    rustc \
     build-base && \
   mix local.rebar --force && \
   mix local.hex --force
