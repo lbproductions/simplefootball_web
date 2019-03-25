@@ -29,7 +29,5 @@ jobs:
           - priv/plts
 
     - stage: docker build
-      before_script:
-        - sudo apt-get install -y rustc
       script:
         - docker build -t lbproductions/simplefootball_web .
