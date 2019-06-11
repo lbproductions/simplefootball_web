@@ -28,8 +28,7 @@ defmodule SimplefootballWeb.MixProject do
   def application do
     [
       mod: {SimplefootballWeb.Application, []},
-      extra_applications: [:logger, :runtime_tools],
-      applications: [:timex, :httpoison]
+      extra_applications: [:logger, :runtime_tools, :timex, :httpoison]
     ]
   end
 
