@@ -1,4 +1,4 @@
-# SimplefootballWeb
+# SimplefootballWeb [![Build Status](https://travis-ci.com/lbproductions/simplefootball_web.svg?branch=master)](https://travis-ci.com/lbproductions/simplefootball_web) [![Coverage Status](https://coveralls.io/repos/github/lbproductions/simplefootball_web/badge.svg?branch=master)](https://coveralls.io/github/lbproductions/simplefootball_web?branch=master)
 
 To start your Phoenix server:
 

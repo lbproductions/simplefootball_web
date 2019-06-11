@@ -43,3 +43,7 @@ npm-debug.log
 
 # ignores the vscode config
 /.vscode
+
+# dialyzer cache
+/priv/plts/*.plt
+/priv/plts/*.plt.hash
