@@ -28,7 +28,7 @@ defmodule SimplefootballWeb.MixProject do
   def application do
     [
       mod: {SimplefootballWeb.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :timex, :httpoison]
     ]
   end
 
@@ -54,8 +54,12 @@ defmodule SimplefootballWeb.MixProject do
       {:ecto_enum, "~> 1.2"},
       {:uuid, "~> 1.1"},
       {:distillery, "~> 2.0"},
-      {:dialyxir, "~> 0.5.0", only: [:dev], runtime: false},
-      {:excoveralls, "~> 0.10", only: :test}
+      {:dialyxir, "~> 0.5.0", only: [:dev]},
+      {:excoveralls, "~> 0.10", only: :test},
+      {:meeseeks, "~> 0.11.0"},
+      {:httpoison, "~> 1.4"},
+      {:timex, "~> 3.1"},
+      {:mock, "~> 0.3.0", only: :test}
     ]
   end
 
@@ -69,7 +73,7 @@ defmodule SimplefootballWeb.MixProject do
     [
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate", "test"]
+      test: ["ecto.drop", "ecto.create", "ecto.migrate", "test"]
     ]
   end
 end

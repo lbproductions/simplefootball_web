@@ -11,9 +11,10 @@ defmodule SimplefootballWeb.Application do
       # Start the Ecto repository
       SimplefootballWeb.Repo,
       # Start the endpoint when the application starts
-      SimplefootballWebWeb.Endpoint
+      SimplefootballWebWeb.Endpoint,
       # Starts a worker by calling: SimplefootballWeb.Worker.start_link(arg)
       # {SimplefootballWeb.Worker, arg},
+      SimplefootballWeb.TMUpdater
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

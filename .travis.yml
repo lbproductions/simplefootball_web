@@ -10,6 +10,7 @@ jobs:
       services:
         - postgresql
       before_script:
+        - sudo apt-get install -y rustc
         - psql -c 'create database simplefootball_web_test;' -U postgres
         - cp config/travis.exs config/test.exs
         - mix do ecto.create, ecto.migrate
@@ -19,6 +20,8 @@ jobs:
         - mix coveralls.travis
 
     - stage: mix dialyzer
+      before_script:
+        - sudo apt-get install -y rustc
       script:
         - mix dialyzer --halt-exit-status
       cache:
