@@ -5,6 +5,8 @@ defmodule SimplefootballWeb.TMParser do
 
   alias SimplefootballWeb.{StringHelpers, ArrayHelpers}
 
+  # Matchday
+
   def scrape_matchday(data) do
     document = Meeseeks.parse(data)
 
@@ -90,6 +92,173 @@ defmodule SimplefootballWeb.TMParser do
     }
   end
 
+  # Current Matchday
+
+  def scrape_current_matchday(data, competition) do
+    document = Meeseeks.parse(data)
+    matchday_box = matchday_box(document, competition)
+    matches = current_matchday_matches(matchday_box)
+    description = current_matchday_description(document, competition)
+
+    %{
+      description: description,
+      matches: matches
+    }
+  end
+
+  def matchday_box(document, competition) do
+    matchdayBoxes = Meeseeks.all(document, xpath(".//div[@id='spieltagsbox']"))
+    index = matchbox_index(competition)
+    Enum.at(matchdayBoxes, index)
+  end
+
+  def matchbox_index(competition) do
+    case competition.competition_type do
+      :bundesliga -> 1
+      :bundesliga2 -> 1
+      :premierLeague -> 1
+      :laLiga -> 1
+      :serieA -> 1
+      :ligue1 -> 1
+      :regionalligaWest -> 1
+      _ -> 0
+    end
+  end
+
+  def current_matchday_description(document, competition) do
+    case competition.competition_type do
+      :bundesliga -> current_matchday_description_from_footer(document)
+      :bundesliga2 -> current_matchday_description_from_footer(document)
+      :premierLeague -> current_matchday_description_from_footer(document)
+      :laLiga -> current_matchday_description_from_footer(document)
+      :serieA -> current_matchday_description_from_footer(document)
+      :ligue1 -> current_matchday_description_from_footer(document)
+      :regionalligaWest -> current_matchday_description_from_footer(document)
+      _ -> current_matchday_description_from_header(document)
+    end
+  end
+
+  def current_matchday_description_from_header(document) do
+    Meeseeks.one(document, xpath(".//div[@class='spieltagsboxHeader']"))
+    |> Meeseeks.text()
+    |> String.trim()
+  end
+
+  def current_matchday_description_from_footer(document) do
+    elements = Meeseeks.all(document, xpath(".//div[@class='footer-links fl']/a"))
+
+    Enum.at(elements, 1)
+    |> Meeseeks.text()
+    |> String.split("Alle Spiele des ", trim: true)
+    |> List.last()
+    |> String.split(".Spieltages", trim: true)
+    |> List.first()
+    |> Kernel.<>(". Spieltag")
+  end
+
+  def current_matchday_matches(matchday_box) do
+    elements = Meeseeks.all(matchday_box, xpath(".//tr[@class='begegnungZeile']"))
+
+    elements
+    |> Enum.with_index()
+    |> Enum.map(fn {element, index} ->
+      day_string = day_string(elements, index)
+
+      current_matchday_match(element, day_string)
+    end)
+    |> Enum.sort(fn x, y ->
+      case DateTime.compare(x.date, y.date) do
+        :lt -> true
+        _ -> false
+      end
+    end)
+  end
+
+  def day_string(elements, index) do
+    Enum.slice(elements, 0..index)
+    |> Enum.map(fn element -> day_string(element) end)
+    |> Enum.filter(&(!is_nil(&1)))
+    |> List.last()
+  end
+
+  def day_string(element) do
+    element_text =
+      Meeseeks.one(element, xpath(".//span[@class='spielzeitpunkt']/a"))
+      |> Meeseeks.text()
+
+    if element_text != nil do
+      element_text |> String.trim()
+    else
+      nil
+    end
+  end
+
+  def current_matchday_match(element, date_string) do
+    time_text =
+      Meeseeks.one(element, xpath(".//span[@class='matchresult']")) ||
+        Meeseeks.one(element, xpath(".//span[@class='matchresult liveaufstellung']"))
+        |> Meeseeks.text()
+        |> StringHelpers.nilIfEmpty()
+
+    date = date_from_strings(date_string, time_text)
+
+    team_elements = Meeseeks.all(element, xpath(".//span[contains(@class, 'vereinsname')]/a"))
+
+    team_names =
+      team_elements
+      |> Enum.map(fn name -> Meeseeks.text(name) end)
+      |> Enum.filter(fn name -> name != nil && name != "" end)
+
+    teamIdentifiers =
+      team_elements
+      |> Enum.map(fn element -> Meeseeks.attr(element, "id") end)
+      |> Enum.filter(fn element -> element != "" end)
+      |> ArrayHelpers.uniq()
+
+    is_started = time_text == nil
+
+    live_result =
+      Meeseeks.one(element, xpath(".//span[@class='matchresult liveresult']"))
+      |> Meeseeks.text()
+      |> StringHelpers.nilIfEmpty()
+
+    is_running = live_result != nil
+
+    result_complete =
+      live_result ||
+        (Meeseeks.one(element, xpath(".//span[@class='matchresult finished']")) ||
+           Meeseeks.one(element, xpath(".//span[@class='matchresult finished noSheet']")))
+        |> Meeseeks.text()
+        |> StringHelpers.nilIfEmpty()
+
+    result =
+      result_complete
+      |> String.split("n.V.", trim: true)
+      |> List.first()
+      |> String.split("n.E.", trim: true)
+      |> List.first()
+
+    is_extra_time = result_complete |> String.contains?("n.V.")
+    is_penalty = result_complete |> String.contains?("n.E.")
+
+    %{
+      date: date,
+      is_started: is_started,
+      is_running: is_running,
+      result: result,
+      is_extra_time: is_extra_time,
+      is_penalty: is_penalty,
+      home_team: %{
+        name: Enum.at(team_names, 0),
+        tm_identifier: Enum.at(teamIdentifiers, 0)
+      },
+      away_team: %{
+        name: Enum.at(team_names, 1),
+        tm_identifier: Enum.at(teamIdentifiers, 1)
+      }
+    }
+  end
+
   # Scraper Helpers
 
   def date(element, index) do
@@ -99,17 +268,16 @@ defmodule SimplefootballWeb.TMParser do
       |> StringHelpers.nilIfEmpty()
 
     timeString = time(element, index)
+    date_from_strings(dateString, timeString)
+  end
 
-    Logger.debug(fn ->
-      "dateString: #{inspect(dateString)}, timeString: #{inspect(timeString)}"
-    end)
-
-    if timeString == nil || dateString == nil do
+  def date_from_strings(date_string, time_string) do
+    if date_string == nil do
       nil
     else
-      {:ok, date} = Timex.parse(dateString, "%d.%m.%Y", :strftime)
+      {:ok, date} = Timex.parse(date_string, "%d.%m.%Y", :strftime)
 
-      {:ok, time} = Timex.parse(timeString, "%H:%M", :strftime)
+      {:ok, time} = Timex.parse(time_string || "00:00", "%H:%M", :strftime)
 
       Timex.shift(date, hours: time.hour, minutes: time.minute)
       |> Timex.to_datetime("Europe/Berlin")

@@ -18,7 +18,7 @@ defmodule DataCreation do
   end
 end
 
-{:ok, bundesliga} =
+bundesliga =
   DataCreation.create(%Competition{
     name: "1. Bundesliga",
     competition_type: "bundesliga",
@@ -26,13 +26,13 @@ end
       "https://upload.wikimedia.org/wikipedia/en/thumb/d/df/Bundesliga_logo_%282017%29.svg/290px-Bundesliga_logo_%282017%29.svg.png"
   })
 
-{:ok, bundesliga2018} =
+bundesliga2018 =
   DataCreation.create(%Season{
     year: 2018,
     competition_id: bundesliga.id
   })
 
-{:ok, bundesliga2018matchday24} =
+bundesliga2018matchday24 =
   DataCreation.create(%Matchday{
     number: 24,
     description: "24. Spieltag",
@@ -40,19 +40,19 @@ end
     is_current_matchday: true
   })
 
-{:ok, bundesliga2018matchday24match1homeTeam} =
+bundesliga2018matchday24match1homeTeam =
   DataCreation.create(%Team{
     name: "Borussia Dortmund",
     abbreviation: "BVB"
   })
 
-{:ok, bundesliga2018matchday24match1awayTeam} =
+bundesliga2018matchday24match1awayTeam =
   DataCreation.create(%Team{
     name: "Bayer Leverkusen",
     abbreviation: "B04"
   })
 
-{:ok, bundesliga2018matchday24match1} =
+bundesliga2018matchday24match1 =
   DataCreation.create(%Match{
     date: DateTime.truncate(DateTime.utc_now(), :second),
     result: "2:1",

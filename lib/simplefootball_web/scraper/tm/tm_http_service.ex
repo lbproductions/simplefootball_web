@@ -25,4 +25,24 @@ defmodule SimplefootballWeb.TMHttpService do
       _ -> nil
     end
   end
+
+  def tm_current_matchday(competition) do
+    result = HTTPoison.get(tm_competition_current_matchday_url(competition))
+
+    case result do
+      {:ok, data} -> data.body
+      _ -> nil
+    end
+  end
+
+  def tm_competition_current_matchday_url(competition) do
+    "https://#{@base_url}/#{tm_competition_current_matchday_url_path(competition)}"
+  end
+
+  def tm_competition_current_matchday_url_path(competition) do
+    case competition.competition_type do
+      :bundesliga -> "1-bundesliga/startseite/wettbewerb/L1"
+      _ -> nil
+    end
+  end
 end

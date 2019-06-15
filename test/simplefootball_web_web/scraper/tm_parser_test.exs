@@ -119,10 +119,6 @@ defmodule SimplefootballWebWeb.TMParserTest do
 
     %{matches: matches} = TMParser.scrape_matchday(result)
 
-    Logger.debug(fn ->
-      "matches: #{inspect(matches)}"
-    end)
-
     assert length(matches) == 9
 
     match = Enum.at(matches, 0)
@@ -223,5 +219,236 @@ defmodule SimplefootballWebWeb.TMParserTest do
     assert match.match.result == "-:-"
     assert match.match.tm_identifier == "3058647"
     assert DateTime.to_string(match.match.date) == "2019-03-11 19:30:00Z"
+  end
+
+  test "scraping current complete finished matchday of Bundesliga" do
+    {:ok, result} =
+      File.read(
+        "./test/simplefootball_web_web/resources/tm/bundesliga_current_2018_34_finished.html"
+      )
+
+    %{description: description, matches: matches} =
+      TMParser.scrape_current_matchday(result, %{
+        competition_type: :bundesliga
+      })
+
+    assert description == "34. Spieltag"
+    assert length(matches) == 9
+
+    match = Enum.at(matches, 0)
+    assert DateTime.to_string(match.date) == "2019-05-17 22:00:00Z"
+    assert match.is_started == true
+    assert match.is_running == false
+    assert match.result == "5:1"
+    assert match.is_penalty == false
+    assert match.is_extra_time == false
+    assert match.home_team.name == "Bayern München"
+    assert match.home_team.tm_identifier == "27"
+    assert match.away_team.name == "E. Frankfurt"
+    assert match.away_team.tm_identifier == "24"
+
+    match = Enum.at(matches, 1)
+    assert DateTime.to_string(match.date) == "2019-05-17 22:00:00Z"
+    assert match.is_started == true
+    assert match.is_running == false
+    assert match.result == "0:0"
+    assert match.is_penalty == false
+    assert match.is_extra_time == false
+    assert match.home_team.name == "FC Schalke 04"
+    assert match.home_team.tm_identifier == "33"
+    assert match.away_team.name == "VfB Stuttgart"
+    assert match.away_team.tm_identifier == "79"
+
+    match = Enum.at(matches, 2)
+    assert DateTime.to_string(match.date) == "2019-05-17 22:00:00Z"
+    assert match.is_started == true
+    assert match.is_running == false
+    assert match.result == "0:2"
+    assert match.is_penalty == false
+    assert match.is_extra_time == false
+    assert match.home_team.name == "Bor. M'gladbach"
+    assert match.home_team.tm_identifier == "18"
+    assert match.away_team.name == "Bor. Dortmund"
+    assert match.away_team.tm_identifier == "16"
+
+    match = Enum.at(matches, 3)
+    assert DateTime.to_string(match.date) == "2019-05-17 22:00:00Z"
+    assert match.is_started == true
+    assert match.is_running == false
+    assert match.result == "1:5"
+    assert match.is_penalty == false
+    assert match.is_extra_time == false
+    assert match.home_team.name == "Hertha BSC"
+    assert match.home_team.tm_identifier == "44"
+    assert match.away_team.name == "Bay. Leverkusen"
+    assert match.away_team.tm_identifier == "15"
+
+    match = Enum.at(matches, 4)
+    assert DateTime.to_string(match.date) == "2019-05-17 22:00:00Z"
+    assert match.is_started == true
+    assert match.is_running == false
+    assert match.result == "2:1"
+    assert match.is_penalty == false
+    assert match.is_extra_time == false
+    assert match.home_team.name == "Werder Bremen"
+    assert match.home_team.tm_identifier == "86"
+    assert match.away_team.name == "RB Leipzig"
+    assert match.away_team.tm_identifier == "23826"
+
+    match = Enum.at(matches, 5)
+    assert DateTime.to_string(match.date) == "2019-05-17 22:00:00Z"
+    assert match.is_started == true
+    assert match.is_running == false
+    assert match.result == "5:1"
+    assert match.is_penalty == false
+    assert match.is_extra_time == false
+    assert match.home_team.name == "SC Freiburg"
+    assert match.home_team.tm_identifier == "60"
+    assert match.away_team.name == "1.FC Nürnberg"
+    assert match.away_team.tm_identifier == "4"
+
+    match = Enum.at(matches, 6)
+    assert DateTime.to_string(match.date) == "2019-05-17 22:00:00Z"
+    assert match.is_started == true
+    assert match.is_running == false
+    assert match.result == "4:2"
+    assert match.is_penalty == false
+    assert match.is_extra_time == false
+    assert match.home_team.name == "1.FSV Mainz 05"
+    assert match.home_team.tm_identifier == "39"
+    assert match.away_team.name == "TSG Hoffenheim"
+    assert match.away_team.tm_identifier == "533"
+
+    match = Enum.at(matches, 7)
+    assert DateTime.to_string(match.date) == "2019-05-17 22:00:00Z"
+    assert match.is_started == true
+    assert match.is_running == false
+    assert match.result == "8:1"
+    assert match.is_penalty == false
+    assert match.is_extra_time == false
+    assert match.home_team.name == "VfL Wolfsburg"
+    assert match.home_team.tm_identifier == "82"
+    assert match.away_team.name == "FC Augsburg"
+    assert match.away_team.tm_identifier == "167"
+
+    match = Enum.at(matches, 8)
+    assert DateTime.to_string(match.date) == "2019-05-17 22:00:00Z"
+    assert match.is_started == true
+    assert match.is_running == false
+    assert match.result == "2:1"
+    assert match.is_penalty == false
+    assert match.is_extra_time == false
+    assert match.home_team.name == "F. Düsseldorf"
+    assert match.home_team.tm_identifier == "38"
+    assert match.away_team.name == "Hannover 96"
+    assert match.away_team.tm_identifier == "42"
+  end
+
+  test "scraping current complete finished matchday of 2. Bundesliga" do
+    {:ok, result} =
+      File.read(
+        "./test/simplefootball_web_web/resources/tm/bundesliga2_current_2018_34_finished.html"
+      )
+
+    %{description: description, matches: matches} =
+      TMParser.scrape_current_matchday(result, %{
+        competition_type: :bundesliga2
+      })
+
+    assert description == "34. Spieltag"
+    assert length(matches) == 9
+
+    Logger.debug(fn ->
+      "matches: #{inspect(matches)}"
+    end)
+  end
+
+  test "scraping current complete finished matchday of Premier League" do
+    {:ok, result} =
+      File.read(
+        "./test/simplefootball_web_web/resources/tm/premierleague_current_2018_38_finished.html"
+      )
+
+    %{description: description, matches: matches} =
+      TMParser.scrape_current_matchday(result, %{
+        competition_type: :premierLeague
+      })
+
+    assert description == "38. Spieltag"
+    assert length(matches) == 10
+
+    Logger.debug(fn ->
+      "matches: #{inspect(matches)}"
+    end)
+  end
+
+  test "scraping current complete finished matchday of La Liga" do
+    {:ok, result} =
+      File.read("./test/simplefootball_web_web/resources/tm/laliga_current_2018_38_finished.html")
+
+    %{description: description, matches: matches} =
+      TMParser.scrape_current_matchday(result, %{
+        competition_type: :laLiga
+      })
+
+    assert description == "38. Spieltag"
+    assert length(matches) == 10
+
+    Logger.debug(fn ->
+      "matches: #{inspect(matches)}"
+    end)
+  end
+
+  test "scraping current complete finished matchday of Serie A" do
+    {:ok, result} =
+      File.read("./test/simplefootball_web_web/resources/tm/serieA_current_2018_38_finished.html")
+
+    %{description: description, matches: matches} =
+      TMParser.scrape_current_matchday(result, %{
+        competition_type: :serieA
+      })
+
+    assert description == "38. Spieltag"
+    assert length(matches) == 10
+
+    Logger.debug(fn ->
+      "matches: #{inspect(matches)}"
+    end)
+  end
+
+  test "scraping current complete finished matchday of Ligue 1" do
+    {:ok, result} =
+      File.read("./test/simplefootball_web_web/resources/tm/ligue1_current_2018_38_finished.html")
+
+    %{description: description, matches: matches} =
+      TMParser.scrape_current_matchday(result, %{
+        competition_type: :ligue1
+      })
+
+    assert description == "38. Spieltag"
+    assert length(matches) == 10
+
+    Logger.debug(fn ->
+      "matches: #{inspect(matches)}"
+    end)
+  end
+
+  test "scraping current complete finished matchday of Regionalliga West" do
+    {:ok, result} =
+      File.read(
+        "./test/simplefootball_web_web/resources/tm/regionalligaWest_current_2018_34_finished.html"
+      )
+
+    %{description: description, matches: matches} =
+      TMParser.scrape_current_matchday(result, %{
+        competition_type: :regionalligaWest
+      })
+
+    assert description == "34. Spieltag"
+    assert length(matches) == 9
+
+    Logger.debug(fn ->
+      "matches: #{inspect(matches)}"
+    end)
   end
 end

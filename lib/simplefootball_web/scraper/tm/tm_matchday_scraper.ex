@@ -8,4 +8,10 @@ defmodule SimplefootballWeb.TMMatchdayScraper do
     data = TMHttpService.matchday(competition_identifier, season.year, number)
     TMParser.scrape_matchday(data)
   end
+
+  @impl MatchdayScraper
+  def current_matchday(competition) do
+    data = TMHttpService.tm_current_matchday(competition)
+    TMParser.scrape_current_matchday(data, competition)
+  end
 end
