@@ -5,6 +5,8 @@ defmodule SimplefootballWeb.TMParser do
 
   alias SimplefootballWeb.{StringHelpers, ArrayHelpers}
 
+  @dfbpokalrounds ["1.Runde", "2.Runde", "Achtelfinale", "Viertelfinale", "Halbfinale", "Finale"]
+
   # Matchday
 
   def scrape_matchday(data) do
@@ -99,10 +101,12 @@ defmodule SimplefootballWeb.TMParser do
     matchday_box = matchday_box(document, competition)
     matches = current_matchday_matches(matchday_box)
     description = current_matchday_description(document, competition)
+    number = current_matchday_number_from_description(description, competition)
 
     %{
       description: description,
-      matches: matches
+      matches: matches,
+      number: number
     }
   end
 
@@ -156,6 +160,20 @@ defmodule SimplefootballWeb.TMParser do
     |> Kernel.<>(". Spieltag")
   end
 
+  def current_matchday_number_from_description(description, _competition) do
+    if String.contains?(description, ". Spieltag") do
+      description
+      |> String.split(". Spieltag", trim: true)
+      |> List.first()
+      |> String.split("Gruppenphase ", trim: true)
+      |> List.last()
+      |> Integer.parse()
+      |> elem(0)
+    else
+      0
+    end
+  end
+
   def current_matchday_matches(matchday_box) do
     elements = Meeseeks.all(matchday_box, xpath(".//tr[@class='begegnungZeile']"))
 
@@ -201,6 +219,7 @@ defmodule SimplefootballWeb.TMParser do
         |> StringHelpers.nilIfEmpty()
 
     date = date_from_strings(date_string, time_text)
+    match_tm_identifier = Meeseeks.attr(element, "data-id")
 
     team_elements = Meeseeks.all(element, xpath(".//span[contains(@class, 'vereinsname')]/a"))
 
@@ -241,8 +260,14 @@ defmodule SimplefootballWeb.TMParser do
     is_extra_time = result_complete |> String.contains?("n.V.")
     is_penalty = result_complete |> String.contains?("n.E.")
 
+    group =
+      Meeseeks.all(element, xpath("preceding-sibling::tr[@class='rundenzeile']"))
+      |> Enum.map(fn element -> Meeseeks.one(element, xpath("./a")) |> Meeseeks.text() end)
+      |> List.last()
+
     %{
       date: date,
+      tm_identifier: match_tm_identifier,
       is_started: is_started,
       is_running: is_running,
       result: result,
@@ -255,7 +280,8 @@ defmodule SimplefootballWeb.TMParser do
       away_team: %{
         name: Enum.at(team_names, 1),
         tm_identifier: Enum.at(teamIdentifiers, 1)
-      }
+      },
+      group: group
     }
   end
 

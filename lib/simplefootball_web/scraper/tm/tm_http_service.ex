@@ -42,6 +42,15 @@ defmodule SimplefootballWeb.TMHttpService do
   def tm_competition_current_matchday_url_path(competition) do
     case competition.competition_type do
       :bundesliga -> "1-bundesliga/startseite/wettbewerb/L1"
+      :bundesliga2 -> "2-bundesliga/startseite/wettbewerb/L2"
+      :regionalligaWest -> "regionalliga-west/startseite/wettbewerb/RLW3"
+      :dfbPokal -> "dfb-pokal/startseite/pokalwettbewerb/DFB"
+      :championsLeague -> "champions-league/startseite/pokalwettbewerb/CL"
+      :europaLeague -> "europa-league/startseite/pokalwettbewerb/EL"
+      :premierLeague -> "premier-league/startseite/wettbewerb/GB1"
+      :laLiga -> "primera-division/startseite/wettbewerb/ES1"
+      :serieA -> "serie-a/startseite/wettbewerb/IT1"
+      :ligue1 -> "ligue-1/startseite/wettbewerb/FR1"
       _ -> nil
     end
   end
