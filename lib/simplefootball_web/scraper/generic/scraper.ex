@@ -4,18 +4,38 @@ defmodule SimplefootballWeb.MatchdayScraper do
   @callback current_matchday(%Competition{}) :: map
 end
 
+require Logger
+
 defmodule SimplefootballWeb.Scraper do
-  alias SimplefootballWeb.{MatchdayRepo, TeamRepo, MatchRepo}
+  alias SimplefootballWeb.{MatchdayRepo, TeamRepo, MatchRepo, SeasonRepo}
 
   def matchday(scraper, competition, season, number) do
     result = scraper.matchday(competition, season, number)
 
     {:ok, matchday} = update_matchday(result.matchday, season.id, number)
-    matches = update_matches(result.matches)
+    matches = update_matches(result.matches, matchday)
 
     %{
       matchday: matchday,
       matches: matches
+    }
+  end
+
+  def current_matchday(scraper, competition) do
+    result = scraper.current_matchday(competition)
+
+    {:ok, season} =
+      SeasonRepo.find_or_create_season_by(year: result.season, competition: competition)
+
+    {:ok, matchday} = update_matchday(result, season.id, result.number)
+    matches = update_matches(result.matches, matchday)
+    current_matchday_update = MatchdayRepo.update_current_matchday(matchday, season)
+
+    %{
+      matchday: matchday,
+      matches: matches,
+      season: season,
+      current_matchday_update: current_matchday_update
     }
   end
 
@@ -31,14 +51,23 @@ defmodule SimplefootballWeb.Scraper do
     TeamRepo.update_or_create_team_by_tm_identifier(team.tm_identifier, team)
   end
 
-  def update_matches(matches) do
-    Enum.map(matches, fn match -> update_match(match) end)
+  def update_matches(matches, matchday) do
+    Enum.map(matches, fn match -> update_match(match, matchday) end)
   end
 
-  def update_match(match) do
+  def update_match(match, matchday) do
     {:ok, home_team} = update_team(match.home_team)
     {:ok, away_team} = update_team(match.away_team)
-    {:ok, match} = MatchRepo.update_or_create_match_by_tm_identifier(match.tm_identifier, match)
+
+    {:ok, match} =
+      MatchRepo.update_or_create_match_by_tm_identifier(
+        match.tm_identifier,
+        Map.merge(match, %{
+          home_team_id: home_team.id,
+          away_team_id: away_team.id,
+          matchday_id: matchday.id
+        })
+      )
 
     %{
       home_team: home_team,

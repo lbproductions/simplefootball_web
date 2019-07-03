@@ -1,4 +1,6 @@
 defmodule SimplefootballWeb.TMHttpService do
+  require Logger
+
   @base_url "www.transfermarkt.de"
 
   def base_url() do
@@ -27,7 +29,13 @@ defmodule SimplefootballWeb.TMHttpService do
   end
 
   def tm_current_matchday(competition) do
-    result = HTTPoison.get(tm_competition_current_matchday_url(competition))
+    url = tm_competition_current_matchday_url(competition)
+
+    Logger.debug(fn ->
+      "tm_current_matchday: #{inspect(url)}"
+    end)
+
+    result = HTTPoison.get(url)
 
     case result do
       {:ok, data} -> data.body

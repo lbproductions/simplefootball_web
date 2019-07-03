@@ -95,24 +95,34 @@ defmodule SimplefootballWeb.TMParser do
   end
 
   # Current Matchday
-
   def scrape_current_matchday(data, competition) do
     document = Meeseeks.parse(data)
-    matchday_box = matchday_box(document, competition)
-    matches = current_matchday_matches(matchday_box)
     description = current_matchday_description(document, competition)
     number = current_matchday_number_from_description(description, competition)
+    matchday_box = matchday_box(document, competition, number)
+    matches = current_matchday_matches(matchday_box)
+    season = current_matchday_season_from_matches(matches)
 
     %{
       description: description,
       matches: matches,
-      number: number
+      number: number,
+      season: season,
+      is_current_matchday: true
     }
   end
 
-  def matchday_box(document, competition) do
+  def matchday_box(document, competition, matchday_number) do
     matchdayBoxes = Meeseeks.all(document, xpath(".//div[@id='spieltagsbox']"))
     index = matchbox_index(competition)
+
+    # if it's the first matchday of the season we have to take the first instead the second box
+    index =
+      cond do
+        matchday_number == 1 -> index - 1
+        true -> index
+      end
+
     Enum.at(matchdayBoxes, index)
   end
 
@@ -151,13 +161,37 @@ defmodule SimplefootballWeb.TMParser do
   def current_matchday_description_from_footer(document) do
     elements = Meeseeks.all(document, xpath(".//div[@class='footer-links fl']/a"))
 
-    Enum.at(elements, 1)
+    matchday_numbers = Enum.map(elements, fn element -> matchday_number_from_element(element) end)
+    min_matchday_number = Enum.min(matchday_numbers)
+
+    Logger.debug(fn ->
+      "matchday_numbers: #{inspect(matchday_numbers)}"
+    end)
+
+    # if it's the first matchday of the season there are no previous matchdays and we
+    # take the first matchday
+    is_first_or_last = length(matchday_numbers) <= 2
+
+    matchday_number =
+      cond do
+        min_matchday_number == 1 and is_first_or_last -> min_matchday_number
+        is_first_or_last -> List.last(matchday_numbers)
+        true -> Enum.at(matchday_numbers, 1)
+      end
+
+    "#{matchday_number}. Spieltag"
+  end
+
+  @spec matchday_number_from_element(nil | Meeseeks.Result.t()) :: integer
+  def matchday_number_from_element(element) do
+    element
     |> Meeseeks.text()
     |> String.split("Alle Spiele des ", trim: true)
     |> List.last()
     |> String.split(".Spieltages", trim: true)
     |> List.first()
-    |> Kernel.<>(". Spieltag")
+    |> Integer.parse()
+    |> elem(0)
   end
 
   def current_matchday_number_from_description(description, _competition) do
@@ -171,6 +205,29 @@ defmodule SimplefootballWeb.TMParser do
       |> elem(0)
     else
       0
+    end
+  end
+
+  def current_matchday_season_from_matches(matches) do
+    if length(matches) > 0 do
+      matches
+      |> Enum.filter(fn match -> match != nil end)
+      |> List.first()
+      |> season_from_match()
+    else
+      # if we have no matches we take provisionally the current date to get the season
+      season_from_match(%{date: Timex.now()})
+    end
+  end
+
+  def season_from_match(match) do
+    match_month = month(match.date)
+    match_year = year(match.date)
+
+    if match_month < 7 do
+      match_year - 1
+    else
+      match_year
     end
   end
 
@@ -213,10 +270,10 @@ defmodule SimplefootballWeb.TMParser do
 
   def current_matchday_match(element, date_string) do
     time_text =
-      Meeseeks.one(element, xpath(".//span[@class='matchresult']")) ||
-        Meeseeks.one(element, xpath(".//span[@class='matchresult liveaufstellung']"))
-        |> Meeseeks.text()
-        |> StringHelpers.nilIfEmpty()
+      (Meeseeks.one(element, xpath(".//span[@class='matchresult']")) ||
+         Meeseeks.one(element, xpath(".//span[@class='matchresult liveaufstellung']")))
+      |> Meeseeks.text()
+      |> StringHelpers.nilIfEmpty()
 
     date = date_from_strings(date_string, time_text)
     match_tm_identifier = Meeseeks.attr(element, "data-id")
@@ -244,11 +301,15 @@ defmodule SimplefootballWeb.TMParser do
     is_running = live_result != nil
 
     result_complete =
-      live_result ||
-        (Meeseeks.one(element, xpath(".//span[@class='matchresult finished']")) ||
-           Meeseeks.one(element, xpath(".//span[@class='matchresult finished noSheet']")))
-        |> Meeseeks.text()
-        |> StringHelpers.nilIfEmpty()
+      if is_started do
+        live_result ||
+          (Meeseeks.one(element, xpath(".//span[@class='matchresult finished']")) ||
+             Meeseeks.one(element, xpath(".//span[@class='matchresult finished noSheet']")))
+          |> Meeseeks.text()
+          |> StringHelpers.nilIfEmpty()
+      else
+        "-:-"
+      end
 
     result =
       result_complete
@@ -319,5 +380,17 @@ defmodule SimplefootballWeb.TMParser do
     |> String.split(" ", trim: true)
     |> List.last()
     |> StringHelpers.nilIfEmpty()
+  end
+
+  def month(date) do
+    Timex.format!(date, "%m", :strftime)
+    |> Integer.parse()
+    |> elem(0)
+  end
+
+  def year(date) do
+    Timex.format!(date, "%Y", :strftime)
+    |> Integer.parse()
+    |> elem(0)
   end
 end

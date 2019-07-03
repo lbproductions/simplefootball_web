@@ -14,7 +14,7 @@ defmodule SimplefootballWeb.Application do
       SimplefootballWebWeb.Endpoint,
       # Starts a worker by calling: SimplefootballWeb.Worker.start_link(arg)
       # {SimplefootballWeb.Worker, arg},
-      SimplefootballWeb.TMUpdater
+      SimplefootballWeb.Updater
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

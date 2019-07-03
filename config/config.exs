@@ -10,6 +10,9 @@ use Mix.Config
 config :simplefootball_web,
   ecto_repos: [SimplefootballWeb.Repo]
 
+config :simplefootball_web, SimplefootballWeb.Updater,
+  matchday_scraper: SimplefootballWeb.TMMatchdayScraper
+
 # Configures the endpoint
 config :simplefootball_web, SimplefootballWebWeb.Endpoint,
   url: [host: "localhost"],

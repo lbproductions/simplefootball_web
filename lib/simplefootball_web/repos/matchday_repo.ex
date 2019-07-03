@@ -18,4 +18,19 @@ defmodule SimplefootballWeb.MatchdayRepo do
     |> Matchday.changeset(changeset)
     |> Repo.insert_or_update()
   end
+
+  def update_current_matchday(current_matchday, season) do
+    {changed_number_of_matchdays, _data} =
+      from(m in Matchday,
+        where:
+          m.is_current_matchday == true and m.season_id == ^season.id and
+            m.id != ^current_matchday.id,
+        update: [set: [is_current_matchday: false]]
+      )
+      |> Repo.update_all([])
+
+    %{
+      changed_number_of_matchdays: changed_number_of_matchdays
+    }
+  end
 end
