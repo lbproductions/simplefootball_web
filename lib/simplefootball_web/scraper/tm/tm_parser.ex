@@ -5,8 +5,6 @@ defmodule SimplefootballWeb.TMParser do
 
   alias SimplefootballWeb.{StringHelpers, ArrayHelpers}
 
-  @dfbpokalrounds ["1.Runde", "2.Runde", "Achtelfinale", "Viertelfinale", "Halbfinale", "Finale"]
-
   # Matchday
 
   def scrape_matchday(data) do
@@ -155,7 +153,7 @@ defmodule SimplefootballWeb.TMParser do
   def current_matchday_description_from_header(document) do
     Meeseeks.one(document, xpath(".//div[@class='spieltagsboxHeader']"))
     |> Meeseeks.text()
-    |> String.trim()
+    |> StringHelpers.trim()
   end
 
   def current_matchday_description_from_footer(document) do
@@ -195,7 +193,7 @@ defmodule SimplefootballWeb.TMParser do
   end
 
   def current_matchday_number_from_description(description, _competition) do
-    if String.contains?(description, ". Spieltag") do
+    if StringHelpers.contains(description, ". Spieltag") do
       description
       |> String.split(". Spieltag", trim: true)
       |> List.first()
@@ -230,6 +228,8 @@ defmodule SimplefootballWeb.TMParser do
       match_year
     end
   end
+
+  def current_matchday_matches(matchday_box) when is_nil(matchday_box), do: []
 
   def current_matchday_matches(matchday_box) do
     elements = Meeseeks.all(matchday_box, xpath(".//tr[@class='begegnungZeile']"))

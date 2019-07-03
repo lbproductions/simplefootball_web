@@ -201,4 +201,27 @@ defmodule SimplefootballWebWeb.ScraperTest do
 
     assert updated_current_matchday.is_current_matchday == true
   end
+
+  @tag :wip
+  test "get current DFB Pokal matchday" do
+    Repo.delete_all(Match)
+    Repo.delete_all(Team)
+    Repo.delete_all(Matchday)
+    Repo.delete_all(Season)
+    Repo.delete_all(Competition)
+
+    {:ok, competition} =
+      Repo.insert(%Competition{
+        name: "DFB-Pokal",
+        competition_type: "dfbPokal",
+        icon_url: ""
+      })
+
+    %{
+      matchday: matchday,
+      matches: matches,
+      season: season,
+      current_matchday_update: current_matchday_update
+    } = Scraper.current_matchday(SimplefootballWebWeb.MatchdayScraperMock, competition)
+  end
 end

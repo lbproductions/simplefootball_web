@@ -1,7 +1,7 @@
 defmodule SimplefootballWeb.Updater do
   require Logger
   use Task
-  alias SimplefootballWeb.{Scraper, CompetitionRepo}
+  alias SimplefootballWeb.{Scraper, CompetitionRepo, Competition}
 
   def start_link(_arg) do
     Task.start_link(&poll/0)
@@ -14,7 +14,7 @@ defmodule SimplefootballWeb.Updater do
   defp poll_current_matchdays do
     receive do
     after
-      10_000 ->
+      60_000 ->
         get_current_matchdays()
         poll_current_matchdays()
     end
@@ -29,18 +29,7 @@ defmodule SimplefootballWeb.Updater do
 
     scraper = config[:matchday_scraper]
 
-    [
-      :bundesliga,
-      :bundesliga2,
-      :regionalligaWest,
-      :dfbPokal,
-      :championsLeague,
-      :europaLeague,
-      :premierLeague,
-      :laLiga,
-      :serieA,
-      :ligue1
-    ]
+    Competition.competition_types()
     |> Enum.map(fn competition_type ->
       competition = CompetitionRepo.competition_by_type(competition_type)
 

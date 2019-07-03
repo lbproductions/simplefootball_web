@@ -7,7 +7,7 @@ end
 require Logger
 
 defmodule SimplefootballWeb.Scraper do
-  alias SimplefootballWeb.{MatchdayRepo, TeamRepo, MatchRepo, SeasonRepo}
+  alias SimplefootballWeb.{MatchdayRepo, TeamRepo, MatchRepo, SeasonRepo, Competition}
 
   def matchday(scraper, competition, season, number) do
     result = scraper.matchday(competition, season, number)
@@ -24,19 +24,48 @@ defmodule SimplefootballWeb.Scraper do
   def current_matchday(scraper, competition) do
     result = scraper.current_matchday(competition)
 
-    {:ok, season} =
-      SeasonRepo.find_or_create_season_by(year: result.season, competition: competition)
+    season = update_season(result.season, competition)
 
-    {:ok, matchday} = update_matchday(result, season.id, result.number)
-    matches = update_matches(result.matches, matchday)
+    update_result =
+      case competition.competition_type do
+        :dfbPokal -> update_dfbpokal_matchdays_and_matches(result, season)
+        true -> update_matchday_and_matches(result, season)
+      end
+
+    Map.merge(update_result, %{season: season})
+  end
+
+  def update_season(year, competition) do
+    {:ok, season} = SeasonRepo.find_or_create_season_by(year: year, competition: competition)
+    season
+  end
+
+  def update_matchday_and_matches(scrape_result, season) do
+    {:ok, matchday} = update_matchday(scrape_result, season.id, scrape_result.number)
+    matches = update_matches(scrape_result.matches, matchday)
     current_matchday_update = MatchdayRepo.update_current_matchday(matchday, season)
 
     %{
       matchday: matchday,
       matches: matches,
-      season: season,
       current_matchday_update: current_matchday_update
     }
+  end
+
+  def update_dfbpokal_matchdays_and_matches(scrape_result, season) do
+    rounds = Competition.competition_rounds(:dfbPokal)
+    matches_by_group = Enum.group_by(scrape_result.matches, fn match -> match.group end)
+
+    matchdays =
+      Enum.map(matches_by_group, fn {group, matches} ->
+        number = Enum.find_index(rounds, fn e -> e end) + 1
+        matchday_data = scrape_result
+        matchday_data.description = group
+        matchday_data.number = number
+        {:ok, matchday} = update_matchday(matchday_data, season.id, number)
+        matchday
+      end)
+      |> Enum.flat_map(fn x -> x end)
   end
 
   def update_matchday(matchday, season_id, number) do

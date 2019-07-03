@@ -559,7 +559,6 @@ defmodule SimplefootballWebWeb.TMParserTest do
     end)
   end
 
-  @tag :wip
   test "scraping current upcoming matchday of Regionalliga West with no scheduled matches" do
     {:ok, result} =
       File.read(
@@ -664,6 +663,22 @@ defmodule SimplefootballWebWeb.TMParserTest do
       Enum.filter(matches, fn match -> match.group == "Achtelfinale - Hinspiele" end)
 
     assert length(third_round_1) == 8
+  end
+
+  test "scraping current upcoming competition of Champions League" do
+    {:ok, result} =
+      File.read(
+        "./test/simplefootball_web_web/resources/tm/championsleague_current_2019_upcoming.html"
+      )
+
+    %{description: description, number: number, season: season, matches: matches} =
+      TMParser.scrape_current_matchday(result, %{
+        competition_type: :championsLeague
+      })
+
+    assert description == nil
+    assert length(matches) == 0
+    assert season == 2019
   end
 
   test "scraping current complete competition of Europa League" do
