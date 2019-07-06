@@ -59,9 +59,7 @@ defmodule SimplefootballWeb.Scraper do
     matchdays =
       Enum.map(matches_by_group, fn {group, matches} ->
         number = Enum.find_index(rounds, fn e -> e end) + 1
-        matchday_data = scrape_result
-        matchday_data.description = group
-        matchday_data.number = number
+        matchday_data = Map.merge(scrape_result, %{description: group, number: number})
         {:ok, matchday} = update_matchday(matchday_data, season.id, number)
         matchday
       end)
