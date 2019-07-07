@@ -1,12 +1,24 @@
 defmodule SimplefootballWeb.TMMatchdayScraper do
-  alias SimplefootballWeb.{TMHttpService, TMParser, MatchdayScraper}
+  alias SimplefootballWeb.{TMHttpService, TMParser, MatchdayScraper, Competition}
   @behaviour MatchdayScraper
 
   @impl MatchdayScraper
   def matchday(competition, season, number) do
     competition_identifier = TMHttpService.tm_competition_identifier(competition)
     data = TMHttpService.matchday(competition_identifier, season.year, number)
-    TMParser.scrape_matchday(data)
+    result = TMParser.scrape_matchday(data)
+
+    description =
+      case competition.competition_type do
+        :dfbPokal -> Competition.competition_rounds(competition) |> Enum.at(number - 1)
+        _ -> "#{number}. Spieltag"
+      end
+
+    Map.merge(result, %{
+      description: description,
+      number: number,
+      season: season
+    })
   end
 
   @impl MatchdayScraper

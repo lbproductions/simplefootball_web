@@ -20,7 +20,7 @@ defmodule SimplefootballWeb.TMParser do
 
     Enum.map(gameTables, fn table -> match(table) end)
     |> Enum.sort(fn x, y ->
-      case DateTime.compare(x.match.date, y.match.date) do
+      case DateTime.compare(x.date, y.date) do
         :lt -> true
         _ -> false
       end
@@ -84,11 +84,9 @@ defmodule SimplefootballWeb.TMParser do
     %{
       home_team: teams.home_team,
       away_team: teams.away_team,
-      match: %{
-        date: date,
-        result: result,
-        tm_identifier: match_tm_identifier
-      }
+      date: date,
+      result: result,
+      tm_identifier: match_tm_identifier
     }
   end
 

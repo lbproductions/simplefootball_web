@@ -16,5 +16,11 @@ defmodule SimplefootballWebWeb.Router do
       CompetitionController,
       :current_matchday
     )
+
+    get(
+      "/competitions/:competitionType/matchday",
+      CompetitionController,
+      :matchday
+    )
   end
 end

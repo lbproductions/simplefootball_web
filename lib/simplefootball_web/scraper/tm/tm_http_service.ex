@@ -24,6 +24,15 @@ defmodule SimplefootballWeb.TMHttpService do
   def tm_competition_identifier(competition) do
     case competition.competition_type do
       :bundesliga -> "1-bundesliga/spieltag/wettbewerb/L1/plus/0"
+      :bundesliga2 -> "2-bundesliga/spieltag/wettbewerb/L2/plus/0"
+      :regionalligaWest -> "regionalliga-west/spieltag/wettbewerb/RLW3/plus/0"
+      :dfbPokal -> "dfb-pokal/startseite/pokalwettbewerb/DFB"
+      :championsLeague -> "uefa-champions-league/spieltag/pokalwettbewerb/CL/plus/0"
+      :europaLeague -> "europa-league/spieltag/pokalwettbewerb/EL/plus/0"
+      :premierLeague -> "premier-league/spieltag/wettbewerb/GB1/plus/0"
+      :laLiga -> "laliga/spieltag/wettbewerb/ES1/plus/0"
+      :serieA -> "serie-a/spieltag/wettbewerb/IT1/plus/0"
+      :ligue1 -> "ligue-1/spieltag/wettbewerb/FR1/plus/0"
       _ -> nil
     end
   end

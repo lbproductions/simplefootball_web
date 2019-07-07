@@ -23,4 +23,20 @@ defmodule SimplefootballWebWeb.CompetitionController do
       json(conn, MatchdayView.render_matchday(current_matchday))
     end
   end
+
+  def matchday(conn, %{
+        "competitionType" => competition_type,
+        "year" => year,
+        "matchday_number" => matchday_number
+      }) do
+    {year, _} = Integer.parse(year)
+    {matchday_number, _} = Integer.parse(matchday_number)
+    matchday = CompetitionRepo.matchday_by_type(competition_type, year, matchday_number)
+
+    if matchday == nil do
+      send_resp(conn, 404, "No matchday found")
+    else
+      json(conn, MatchdayView.render_matchday(matchday))
+    end
+  end
 end

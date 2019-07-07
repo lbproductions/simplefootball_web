@@ -12,7 +12,7 @@ defmodule SimplefootballWeb.Scraper do
   def matchday(scraper, competition, season, number) do
     result = scraper.matchday(competition, season, number)
 
-    {:ok, matchday} = update_matchday(result.matchday, season.id, number)
+    {:ok, matchday} = update_matchday(result, season.id, number)
     matches = update_matches(result.matches, matchday)
 
     %{
@@ -29,7 +29,7 @@ defmodule SimplefootballWeb.Scraper do
     update_result =
       case competition.competition_type do
         :dfbPokal -> update_dfbpokal_matchdays_and_matches(result, season)
-        true -> update_matchday_and_matches(result, season)
+        _ -> update_matchday_and_matches(result, season)
       end
 
     Map.merge(update_result, %{season: season})
@@ -56,14 +56,43 @@ defmodule SimplefootballWeb.Scraper do
     rounds = Competition.competition_rounds(:dfbPokal)
     matches_by_group = Enum.group_by(scrape_result.matches, fn match -> match.group end)
 
-    matchdays =
+    matchday_results =
       Enum.map(matches_by_group, fn {group, matches} ->
-        number = Enum.find_index(rounds, fn e -> e end) + 1
+        number = Enum.find_index(rounds, fn round -> round == group end) + 1
         matchday_data = Map.merge(scrape_result, %{description: group, number: number})
         {:ok, matchday} = update_matchday(matchday_data, season.id, number)
-        matchday
+        matches = update_matches(matches, matchday)
+
+        %{
+          matchday: matchday,
+          matches: matches
+        }
       end)
-      |> Enum.flat_map(fn x -> x end)
+
+    current_matchday =
+      Enum.max_by(matchday_results, fn result -> result.matchday.number end).matchday
+
+    current_matchday_update = MatchdayRepo.update_current_matchday(current_matchday, season)
+
+    # Update is_current_matchday for all but not the current matchday
+    matchday_results =
+      Enum.map(matchday_results, fn result ->
+        case result.matchday.id == current_matchday.id do
+          true ->
+            result
+
+          false ->
+            Map.merge(result, %{
+              matchday: Map.merge(result.matchday, %{is_current_matchday: false})
+            })
+        end
+      end)
+
+    %{
+      matchday: current_matchday,
+      matchday_results: matchday_results,
+      current_matchday_update: current_matchday_update
+    }
   end
 
   def update_matchday(matchday, season_id, number) do
