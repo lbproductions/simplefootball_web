@@ -435,7 +435,6 @@ defmodule SimplefootballWebWeb.TMParserTest do
     assert match.tm_identifier == "3203432"
   end
 
-  @tag :wip
   test "scraping matchday 8 of 1. Bundesliga season 2019" do
     {:ok, result} =
       File.read("./test/simplefootball_web_web/resources/tm/bundesliga_2019_8_complete.html")
