@@ -18,4 +18,10 @@ defmodule SimplefootballWeb.MatchRepo do
     |> Match.changeset(changeset)
     |> Repo.insert_or_update()
   end
+
+  def match_details(id) do
+    Match
+    |> Repo.get_by(id: id)
+    |> Repo.preload([:match_events, :home_team, :away_team, :home_lineup, :away_lineup])
+  end
 end

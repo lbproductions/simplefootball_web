@@ -8,7 +8,7 @@ defmodule SimplefootballWeb.Updater do
   end
 
   def poll() do
-    # poll_current_matchdays()
+    poll_current_matchdays()
     # poll_matchdays()
   end
 

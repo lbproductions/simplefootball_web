@@ -53,6 +53,8 @@ defmodule SimplefootballWeb.Repo.Migrations.CreatePeople do
       add :result, :string
       add :after_penalties, :boolean
       add :extra_time, :boolean
+      add :is_running, :boolean
+      add :is_started, :boolean
       add :tm_identifier, :string
       add :home_team_id, references(:teams)
       add :away_team_id, references(:teams)

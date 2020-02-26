@@ -4,6 +4,11 @@ defmodule SimplefootballWeb.MatchdayScraper do
   @callback current_matchday(%Competition{}) :: map
 end
 
+defmodule SimplefootballWeb.MatchDetailsScraper do
+  alias SimplefootballWeb.{Match}
+  @callback match_details(%Match{}) :: map
+end
+
 require Logger
 
 defmodule SimplefootballWeb.Scraper do

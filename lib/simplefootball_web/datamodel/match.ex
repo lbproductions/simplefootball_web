@@ -9,6 +9,8 @@ defmodule SimplefootballWeb.Match do
     field(:result, :string)
     field(:after_penalties, :boolean, default: false)
     field(:extra_time, :boolean, default: false)
+    field(:is_running, :boolean, default: false)
+    field(:is_started, :boolean, default: false)
     field(:tm_identifier, :string)
 
     has_many(:match_events, MatchEvent)
@@ -26,6 +28,8 @@ defmodule SimplefootballWeb.Match do
       :result,
       :after_penalties,
       :extra_time,
+      :is_started,
+      :is_running,
       :tm_identifier,
       :home_team_id,
       :away_team_id,

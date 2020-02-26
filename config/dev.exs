@@ -68,6 +68,7 @@ config :phoenix, :plug_init_mode, :runtime
 
 # Configure your database
 config :simplefootball_web, SimplefootballWeb.Repo,
+  adapter: Ecto.Adapters.Postgres,
   username: "postgres",
   password: "postgres",
   database: "simplefootball_web_dev",

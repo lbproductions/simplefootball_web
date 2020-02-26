@@ -247,7 +247,6 @@ defmodule SimplefootballWebWeb.ScraperTest do
     assert updated_current_matchday.is_current_matchday == true
   end
 
-  @tag :wip
   test "get current DFB Pokal matchday" do
     Repo.delete_all(Match)
     Repo.delete_all(Team)

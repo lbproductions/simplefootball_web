@@ -68,7 +68,10 @@ defmodule SimplefootballWeb.TMParser do
     resultElement =
       Meeseeks.one(table, xpath(".//a[@title='Vorbericht']")) ||
         Meeseeks.one(table, xpath(".//a[@class='ergebnis-link live-ergebnis']")) ||
-        Meeseeks.one(table, xpath(".//a[@class='ergebnis-link']"))
+        Meeseeks.one(table, xpath(".//a[@class='ergebnis-link']")) ||
+        Meeseeks.one(table, xpath(".//a[@title='Spielbericht']")) ||
+        Meeseeks.one(table, xpath(".//a[@title='Zum Vorbericht']")) ||
+        Meeseeks.one(table, xpath(".//a[@title='Liveticker']"))
 
     result = Meeseeks.text(resultElement)
 

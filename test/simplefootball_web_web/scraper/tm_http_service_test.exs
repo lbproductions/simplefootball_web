@@ -79,6 +79,7 @@ defmodule SimplefootballWebWeb.TMHttpServiceTest do
     }
 
     competition_identifier = TMHttpService.tm_competition_current_matchday_url_path(competition)
+
     base_url = TMHttpService.base_url()
 
     expected_url = "https://#{base_url}/#{competition_identifier}"

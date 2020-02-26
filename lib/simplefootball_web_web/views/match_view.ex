@@ -14,7 +14,9 @@ defmodule SimplefootballWebWeb.MatchView do
       afterPenalties: match.after_penalties,
       extraTime: match.extra_time,
       homeTeam: include_team(match.home_team),
-      awayTeam: include_team(match.away_team)
+      awayTeam: include_team(match.away_team),
+      isRunning: match.is_running,
+      isStarted: match.is_started
     }
     |> Helpers.drop_nil()
   end

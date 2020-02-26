@@ -7,18 +7,13 @@ defmodule SimplefootballWeb.TMHttpService do
     @base_url
   end
 
-  def matchday(competition_identifier, season_year, number) do
-    result =
-      HTTPoison.get(
-        "https://#{@base_url}/#{competition_identifier}?saison_id=#{season_year}&spieltag=#{
-          number
-        }"
-      )
+  # Matchday
 
-    case result do
-      {:ok, data} -> data.body
-      _ -> nil
-    end
+  def matchday(competition_identifier, season_year, number) do
+    url =
+      "https://#{@base_url}/#{competition_identifier}?saison_id=#{season_year}&spieltag=#{number}"
+
+    call_url(url)
   end
 
   def tm_competition_identifier(competition) do
@@ -37,19 +32,11 @@ defmodule SimplefootballWeb.TMHttpService do
     end
   end
 
+  # Current matchday
+
   def tm_current_matchday(competition) do
     url = tm_competition_current_matchday_url(competition)
-
-    Logger.debug(fn ->
-      "tm_current_matchday: #{inspect(url)}"
-    end)
-
-    result = HTTPoison.get(url)
-
-    case result do
-      {:ok, data} -> data.body
-      _ -> nil
-    end
+    call_url(url)
   end
 
   def tm_competition_current_matchday_url(competition) do
@@ -68,6 +55,33 @@ defmodule SimplefootballWeb.TMHttpService do
       :laLiga -> "primera-division/startseite/wettbewerb/ES1"
       :serieA -> "serie-a/startseite/wettbewerb/IT1"
       :ligue1 -> "ligue-1/startseite/wettbewerb/FR1"
+      _ -> nil
+    end
+  end
+
+  # Match details
+
+  def tm_report_match_details(tm_match_identifier) do
+    url = "https://#{@base_url}/spielbericht/index/spielbericht/#{tm_match_identifier}"
+    call_url(url)
+  end
+
+  def tm_live_match_details(tm_match_identifier) do
+    url = "https://#{@base_url}/ticker/begegnung/live/#{tm_match_identifier}"
+    call_url(url)
+  end
+
+  # URL calling
+
+  def call_url(url) do
+    Logger.debug(fn ->
+      "call_url: #{inspect(url)}"
+    end)
+
+    result = HTTPoison.get(url)
+
+    case result do
+      {:ok, data} -> data.body
       _ -> nil
     end
   end

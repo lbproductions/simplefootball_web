@@ -22,5 +22,7 @@ defmodule SimplefootballWebWeb.Router do
       CompetitionController,
       :matchday
     )
+
+    resources "/matches", MatchController, only: [:show]
   end
 end

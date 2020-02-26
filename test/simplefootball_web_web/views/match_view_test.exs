@@ -20,7 +20,9 @@ defmodule SimplefootballWebWeb.MatchViewTest do
              date: DateTime.to_string(date),
              result: "2:1",
              afterPenalties: false,
-             extraTime: false
+             extraTime: false,
+             isRunning: false,
+             isStarted: false
            }
   end
 
@@ -56,7 +58,9 @@ defmodule SimplefootballWebWeb.MatchViewTest do
              awayTeam: %{
                name: "Bayer Leverkusen",
                abbreviation: "B04"
-             }
+             },
+             isRunning: false,
+             isStarted: false
            }
   end
 
@@ -67,7 +71,9 @@ defmodule SimplefootballWebWeb.MatchViewTest do
       date: date,
       result: "2:1",
       after_penalties: false,
-      extra_time: false
+      extra_time: false,
+      is_running: true,
+      is_started: true
     }
 
     match2 = %Match{
@@ -84,13 +90,17 @@ defmodule SimplefootballWebWeb.MatchViewTest do
                date: DateTime.to_string(date),
                result: "2:1",
                afterPenalties: false,
-               extraTime: false
+               extraTime: false,
+               isRunning: true,
+               isStarted: true
              },
              %{
                date: DateTime.to_string(date),
                result: "2:2",
                afterPenalties: true,
-               extraTime: true
+               extraTime: true,
+               isRunning: false,
+               isStarted: false
              }
            ]
   end

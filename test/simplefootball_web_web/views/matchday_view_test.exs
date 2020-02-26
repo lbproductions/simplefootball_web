@@ -32,7 +32,9 @@ defmodule SimplefootballWebWeb.MatchdayViewTest do
           date: date,
           result: "2:1",
           after_penalties: false,
-          extra_time: false
+          extra_time: false,
+          is_running: true,
+          is_started: true
         },
         %Match{
           date: date,
@@ -54,13 +56,17 @@ defmodule SimplefootballWebWeb.MatchdayViewTest do
                  date: DateTime.to_string(date),
                  result: "2:1",
                  afterPenalties: false,
-                 extraTime: false
+                 extraTime: false,
+                 isRunning: true,
+                 isStarted: true
                },
                %{
                  date: DateTime.to_string(date),
                  result: "2:2",
                  afterPenalties: true,
-                 extraTime: true
+                 extraTime: true,
+                 isRunning: false,
+                 isStarted: false
                }
              ]
            }

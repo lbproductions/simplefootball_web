@@ -142,7 +142,9 @@ defmodule SimplefootballWebWeb.CompetitionControllerTest do
                  "awayTeam" => %{
                    "name" => "Bayer Leverkusen",
                    "abbreviation" => "B04"
-                 }
+                 },
+                 "isRunning" => false,
+                 "isStarted" => false
                }
              ]
            }

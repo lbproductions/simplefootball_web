@@ -433,10 +433,70 @@ defmodule SimplefootballWebWeb.TMParserTest do
     is_union(match.home_team)
     is_leipzig(match.away_team)
     assert match.tm_identifier == "3203432"
+  end
 
-    Logger.debug(fn ->
-      "matches: #{inspect(matches)}"
-    end)
+  @tag :wip
+  test "scraping matchday 8 of 1. Bundesliga season 2019" do
+    {:ok, result} =
+      File.read("./test/simplefootball_web_web/resources/tm/bundesliga_2019_8_complete.html")
+
+    %{matches: matches} = TMParser.scrape_matchday(result)
+
+    assert length(matches) == 9
+
+    match = Enum.at(matches, 0)
+    assert DateTime.to_string(match.date) == "2019-10-18 18:30:00Z"
+    is_frankfurt(match.home_team)
+    is_leverkusen(match.away_team)
+    assert match.tm_identifier == "3203498"
+
+    match = Enum.at(matches, 1)
+    assert DateTime.to_string(match.date) == "2019-10-19 13:30:00Z"
+    is_leipzig(match.home_team)
+    is_wolfsburg(match.away_team)
+    assert match.tm_identifier == "3203497"
+
+    match = Enum.at(matches, 2)
+    assert DateTime.to_string(match.date) == "2019-10-19 13:30:00Z"
+    is_bremen(match.home_team)
+    is_hertha(match.away_team)
+    assert match.tm_identifier == "3203499"
+
+    match = Enum.at(matches, 3)
+    assert DateTime.to_string(match.date) == "2019-10-19 13:30:00Z"
+    is_duesseldorf(match.home_team)
+    is_mainz(match.away_team)
+    assert match.tm_identifier == "3203501"
+
+    match = Enum.at(matches, 4)
+    assert DateTime.to_string(match.date) == "2019-10-19 13:30:00Z"
+    is_augsburg(match.home_team)
+    is_bauern(match.away_team)
+    assert match.tm_identifier == "3203502"
+
+    match = Enum.at(matches, 5)
+    assert DateTime.to_string(match.date) == "2019-10-19 13:30:00Z"
+    is_union(match.home_team)
+    is_freiburg(match.away_team)
+    assert match.tm_identifier == "3203504"
+
+    match = Enum.at(matches, 6)
+    assert DateTime.to_string(match.date) == "2019-10-19 16:30:00Z"
+    is_dortmund(match.home_team)
+    is_gladbach(match.away_team)
+    assert match.tm_identifier == "3203496"
+
+    match = Enum.at(matches, 7)
+    assert DateTime.to_string(match.date) == "2019-10-20 13:30:00Z"
+    is_koeln(match.home_team)
+    is_paderborn(match.away_team)
+    assert match.tm_identifier == "3203503"
+
+    match = Enum.at(matches, 8)
+    assert DateTime.to_string(match.date) == "2019-10-20 16:00:00Z"
+    is_hoffenheim(match.home_team)
+    is_scheisse(match.away_team)
+    assert match.tm_identifier == "3203500"
   end
 
   test "scraping current complete finished matchday of 2. Bundesliga" do
@@ -679,6 +739,23 @@ defmodule SimplefootballWebWeb.TMParserTest do
     assert description == nil
     assert length(matches) == 0
     assert season == 2019
+  end
+
+  test "scraping current upcoming first matchday of Champions League" do
+    {:ok, result} =
+      File.read(
+        "./test/simplefootball_web_web/resources/tm/championsleague_current_2019_matchday1_upcoming.html"
+      )
+
+    %{description: description, number: number, season: season, matches: matches} =
+      TMParser.scrape_current_matchday(result, %{
+        competition_type: :championsLeague
+      })
+
+    assert description == "Gruppenphase 1. Spieltag"
+    assert length(matches) == 16
+    assert season == 2019
+    assert number == 1
   end
 
   test "scraping current complete competition of Europa League" do
