@@ -13,10 +13,10 @@ defmodule SimplefootballWeb.TMMatchDetailsScraper do
 
     if is_live do
       data = TMHttpService.tm_live_match_details(match.tm_identifier)
-      TMMatchDetailsParser.scrape_live_match_details(data)
+      TMMatchDetailsParser.scrape_live_match_details(data, match.tm_identifier)
     else
       data = TMHttpService.tm_report_match_details(match.tm_identifier)
-      TMMatchDetailsParser.scrape_report_match_details(data)
+      TMMatchDetailsParser.scrape_report_match_details(data, match.tm_identifier)
     end
   end
 end
