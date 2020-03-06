@@ -3,7 +3,7 @@ defmodule SimplefootballWeb.TMParser do
   require Logger
   use Timex
 
-  alias SimplefootballWeb.{StringHelpers, ArrayHelpers}
+  alias SimplefootballWeb.{StringHelpers, ArrayHelpers, DateHelpers}
 
   # Matchday
 
@@ -220,8 +220,8 @@ defmodule SimplefootballWeb.TMParser do
   end
 
   def season_from_match(match) do
-    match_month = month(match.date)
-    match_year = year(match.date)
+    match_month = DateHelpers.month(match.date)
+    match_year = DateHelpers.year(match.date)
 
     if match_month < 7 do
       match_year - 1
@@ -276,7 +276,7 @@ defmodule SimplefootballWeb.TMParser do
       |> Meeseeks.text()
       |> StringHelpers.nilIfEmpty()
 
-    date = date_from_strings(date_string, time_text)
+    date = DateHelpers.date_from_strings(date_string, time_text)
     match_tm_identifier = Meeseeks.attr(element, "data-id")
 
     team_elements = Meeseeks.all(element, xpath(".//span[contains(@class, 'vereinsname')]/a"))
@@ -356,42 +356,11 @@ defmodule SimplefootballWeb.TMParser do
       |> StringHelpers.nilIfEmpty()
 
     timeString = time(element, index)
-    date_from_strings(dateString, timeString)
-  end
-
-  def date_from_strings(date_string, time_string) do
-    if date_string == nil do
-      nil
-    else
-      {:ok, date} = Timex.parse(date_string, "%d.%m.%Y", :strftime)
-
-      {:ok, time} = Timex.parse(time_string || "00:00", "%H:%M", :strftime)
-
-      Timex.shift(date, hours: time.hour, minutes: time.minute)
-      |> Timex.to_datetime("Europe/Berlin")
-      |> Timezone.convert(Timezone.get("UTC", date))
-    end
+    DateHelpers.date_from_strings(dateString, timeString)
   end
 
   def time(element, index) do
     Meeseeks.one(element, xpath(".//tr[#{index}]/td"))
-    |> Meeseeks.text()
-    |> String.trim()
-    |> String.replace(" Uhr", "")
-    |> String.split(" ", trim: true)
-    |> List.last()
-    |> StringHelpers.nilIfEmpty()
-  end
-
-  def month(date) do
-    Timex.format!(date, "%m", :strftime)
-    |> Integer.parse()
-    |> elem(0)
-  end
-
-  def year(date) do
-    Timex.format!(date, "%Y", :strftime)
-    |> Integer.parse()
-    |> elem(0)
+    |> DateHelpers.time_string()
   end
 end
