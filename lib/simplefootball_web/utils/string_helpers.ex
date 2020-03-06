@@ -18,4 +18,10 @@ defmodule SimplefootballWeb.StringHelpers do
   def contains(string, content) do
     String.contains?(string, content)
   end
+
+  def split(string, _separator, _trim) when is_nil(string), do: nil
+
+  def split(string, separator, trim) do
+    String.split(string, separator, trim: trim)
+  end
 end
